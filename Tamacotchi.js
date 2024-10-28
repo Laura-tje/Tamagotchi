@@ -196,7 +196,7 @@ function setup() {
   canvas.position(0, 0);
 
   //createCanvas(600, 500);
-  
+
   background(135, 206, 265);
   backGround.resize(600, 500);
   tamagotchi.image.resize(tamagotchi.size, tamagotchi.size);
