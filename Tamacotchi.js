@@ -1,4 +1,5 @@
 //Variables
+let canvas;
 let backGround;
 
 let sickness = {
@@ -191,7 +192,11 @@ function preload() {
   cleanIcon.image = loadImage("assets/cleanIcon.png");
 }
 function setup() {
-  createCanvas(600, 500);
+  canvas = createCanvas(600, 500);
+  canvas.position(0, 0);
+
+  //createCanvas(600, 500);
+  
   background(135, 206, 265);
   backGround.resize(600, 500);
   tamagotchi.image.resize(tamagotchi.size, tamagotchi.size);
