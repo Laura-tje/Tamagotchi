@@ -1148,7 +1148,7 @@ function showPercentage() {
     text(`${round(energyBar.score)}%`, (energyBar.x + (energyBar.size / 2)), (energyBar.y + energyBar.size + 15));
   }
   
-  //HungerBa
+  //HungerBar
   if (mouseX >= hungerBar.x && mouseX <= (hungerBar.x + hungerBar.size) && mouseY >= hungerBar.y && mouseY <= (hungerBar.y + hungerBar.size)) {
     textSize(15);
     strokeWeight(0);
