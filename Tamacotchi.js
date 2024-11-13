@@ -668,15 +668,30 @@ function drawStore() {
 
 function drawStoreButton() {
   store.button = createButton(store.buttonText);
-  store.button.position(555, 107.5);
+  store.button.position(565, 107.5);
+  store.button.size(15, 235)
   store.button.mousePressed(storeShown);
-  store.button.style("background-color", "#f9e0a0");
+  store.button.style("background-color", "#5d3330");
+  store.button.style("border", "#5d3330");
+
+  store.button.style("color", "#f9e0a0");
+
+  store.button.style("padding", "0")
+  store.button.style("text-align", "center")
 }
 function drawStoreOpenButton() {
   store.openButton = createButton(">");
-  store.openButton.position(425, 107.5);
+  store.openButton.position(435, 107.5);
+  store.openButton.size(15, 235)
   store.openButton.mousePressed(storeShown);
-  store.openButton.style("background-color", "#f9e0a0");
+  store.openButton.style("background-color", "#5d3330");
+  store.openButton.style("border", "#5d3330");
+
+  store.openButton.style("color", "#f9e0a0");
+
+  store.openButton.style("padding", "0")
+  store.openButton.style("text-align", "center")
+
 }
 
 function drawBuyFlyButton() {
@@ -1357,8 +1372,7 @@ function mouseReleased() {
 
 function draw() {    
   background(135, 206, 265);
-  console.log(`${round(sickness.timerUntilSickness)} seconds until sickness`);
-  //console.log(sickness.isSick);
+  console.log(`${round(sickness.timerUntilSickness)}`);
   if (!isDead) {
     tamagotchi.nameButton.show();
     reloadButton.show();
@@ -1390,6 +1404,7 @@ function draw() {
 }
 
 //To Do List:
+  //Store button bigger
   //Bubbles disappearen
   //Game with soccer
   //Backgrounds change
