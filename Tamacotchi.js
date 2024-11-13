@@ -668,13 +668,13 @@ function drawStore() {
 
 function drawStoreButton() {
   store.button = createButton(store.buttonText);
-  store.button.position(555, 107);
+  store.button.position(555, 107.5);
   store.button.mousePressed(storeShown);
   store.button.style("background-color", "#f9e0a0");
 }
 function drawStoreOpenButton() {
   store.openButton = createButton(">");
-  store.openButton.position(425, 107);
+  store.openButton.position(425, 107.5);
   store.openButton.mousePressed(storeShown);
   store.openButton.style("background-color", "#f9e0a0");
 }
@@ -1172,7 +1172,7 @@ function showPercentage() {
     text(`${round(healthBar.score)}%`, (healthBar.x + (healthBar.size / 2)), (healthBar.y + healthBar.size + 15));
   }
   
-  //HealthBar
+  //SicknessBar
   if (mouseX >= sickness.barX && mouseX <= (sickness.barX + sickness.barSize) && mouseY >= sickness.barY && mouseY <= (sickness.barY + sickness.barSize) && sickness.isSick) {
     textSize(15);
     strokeWeight(0);
@@ -1390,6 +1390,17 @@ function draw() {
 }
 
 //To Do List:
+  //Bubbles disappearen
+  //Game with soccer
+  //Backgrounds change
+  //Dark/light mode with button
+
+
+
+
+
+
+
   //Facial expressions working
     //sickLook moet ook nog
     //slaap met z'tjes
