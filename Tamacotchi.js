@@ -1,6 +1,5 @@
-//Variables
+
 let canvas;
-let backGround;
 
 let sickness = {
   timerUntilSickness: null,
@@ -24,6 +23,14 @@ let reloadTimer = 8; //8
 
 let playingIsSet = false;
 let feedingIsSet = false;
+
+let room = {
+  current: 1,
+  bathroom: null,
+  kitchen: null,
+  bedroom: null,
+  playroom: null,
+}
 
 let store = {
   openButton: null,
@@ -169,12 +176,17 @@ let bubbles = [];
 
 //Other Functions (I do not know what name to give these)
 function preload() {
-  backGround = loadImage("assets/background.png");
   tamagotchi.image = loadImage("assets/frog2.png");
   coin.image = loadImage("assets/frogCoin.png");
   deaths.image = loadImage("assets/frogDeaths.png");
   sickness.barImage = loadImage("assets/virusBar.png");
   sickness.thermometerImage = loadImage("assets/thermometer.png");
+
+  //Rooms
+  room.bathroom = loadImage("assets/bathroom.png");
+  room.kitchen = loadImage("assets/kitchen.png");
+  room.bedroom = loadImage("assets/bedroom.png");
+  room.playroom = loadImage("assets/playroom.png");
   
   //Bars
   energyBar.image = loadImage("assets/energyBar.png");
@@ -193,17 +205,22 @@ function preload() {
 }
 function setup() {
   canvas = createCanvas(600, 500);
+  
+  createCanvas(600, 500);
   canvas.position(0, 0);
 
-  //createCanvas(600, 500);
 
-  background(135, 206, 265);
-  backGround.resize(600, 500);
+
   tamagotchi.image.resize(tamagotchi.size, tamagotchi.size);
   coin.image.resize(coin.size, coin.size);
   deaths.image.resize(deaths.size, deaths.size);
   sickness.barImage.resize(sickness.barSize, sickness.barSize);
   sickness.thermometerImage.resize(sickness.thermometerSize, sickness.thermometerSize);
+
+  room.bathroom.resize(600, 500);
+  room.kitchen.resize(600, 500);
+  room.bedroom.resize(600, 500);
+  room.playroom.resize(600, 500);
 
   let storedName = localStorage.getItem("tamagotchi.name");
   if (storedName) {
@@ -249,8 +266,20 @@ function setup() {
   foodIcon.wormsImage.resize(foodIcon.wormsSize, foodIcon.wormsSize);
   playIcon.image.resize(playIcon.size, playIcon.size);
   cleanIcon.image.resize(cleanIcon.size, cleanIcon.size);
+  
+  drawBackground();
 }
 function isNowDead() {
+  room.current = 0;
+
+  tamagotchi.nameButton.hide();    
+  reloadButton.hide();
+  store.button.hide();
+  store.openButton.hide();
+  store.buttonBuyFly.hide();
+  store.buttonBuyWorms.hide();
+  store.buttonBuyMedicine.hide();
+
   if (reloadTimer == 8) { //logs the cause of death to the console :)
     if (energyBar.score <= 0) {
       console.log("%cDied of lack of energy...", "color: red;");
@@ -319,7 +348,26 @@ function isNowDead() {
     sickness.isSick = false;
     sickness.barScore = 100;    
     deaths.amount += 1;
+    room.current = 1; //this has to be something different but idk what!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
+}
+
+//background
+function drawBackground() {
+  //background(135, 206, 265); //this has to go eventually
+
+  if (room.current == 0) {
+    background(135, 206, 265); //this has to go eventually
+  } else if (room.current == 1) {
+    image(room.bathroom, 0, 0, width, height);
+  } else if (room.current == 2) {
+    image(room.bedroom, 0, 0);
+  } else if (room.current == 3) {
+    image(room.kitchen, 0, 0);
+  } else if (room.current == 4) {
+    image(room.playroom, 0, 0);
+  }
+
 }
 
 
@@ -385,11 +433,11 @@ function drawFrog() {
     stroke(93, 51, 48); //brown
     strokeWeight(1);
     textSize(20);
-    text("Z", 380, 180);
+    text("Z", tamagotchi.x + 280, tamagotchi.y + 130);
     textSize(30);
-    text("Z", 400, 160);
+    text("Z", tamagotchi.x + 300, tamagotchi.y + 110);
     textSize(40);
-    text("Z", 425, 140);
+    text("Z", tamagotchi.x + 325, tamagotchi.y + 90);
   }
   if (currentlyDragging == cleanIcon.name) {
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
@@ -408,20 +456,20 @@ function sickLook() {
   strokeWeight(0);
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(233, 182, 30, 15)  
-  rect(336, 182, 30, 15)
+  rect(tamagotchi.x + 133, tamagotchi.y + 132, 30, 15)  
+  rect(tamagotchi.x + 236, tamagotchi.y + 132, 30, 15)
   stroke(93, 51, 48); //brown   
   strokeWeight(2); 
   
-  arc(249, 195, 30, 15, radians(10), radians(170))
-  arc(352, 195, 30, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 149, tamagotchi.y + 145, 30, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 252, tamagotchi.y + 145, 30, 15, radians(10), radians(170))
   
   //Under the eye
   strokeWeight(2);
   stroke(93, 51, 48); //brown
   noFill();
-  arc(249, 210, 23, 15, radians(10), radians(170))
-  arc(353, 210, 23, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 149, tamagotchi.y + 160, 23, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 253, tamagotchi.y + 160, 23, 15, radians(10), radians(170))
   
   //mouth
   if (currentlyDragging == "none" || currentlyDragging == playIcon.name || currentlyDragging == cleanIcon.name || currentlyDragging == sleepIcon.name || currentlyDragging == foodIcon.name ||
@@ -431,12 +479,12 @@ function sickLook() {
     fill(196, 221, 138); //green
     strokeWeight(0);
     rect(270, 195, 60, 50);
-    image(sickness.thermometerImage, 180, 175);
+    image(sickness.thermometerImage, tamagotchi.x + 80, tamagotchi.y + 125);
     
     fill(196, 221, 138); //green
     stroke(93, 51, 48); //brown   
     strokeWeight(2);
-    arc(260, 255, 30, 30, radians(170), radians(-80))
+    arc(tamagotchi.x + 160, tamagotchi.y + 205, 30, 30, radians(170), radians(-80))
   }
 
 
@@ -456,15 +504,15 @@ function hungerLook() {
   strokeWeight(2);
   stroke(93, 51, 48, 150) //Brown
   
-  arc(275, 300, 15, 10, radians(180), radians(0));
-  arc(290, 300, 15, 10, radians(0), radians(180));
-  arc(305, 300, 15, 10, radians(180), radians(0));
-  arc(320, 300, 15, 10, radians(0), radians(180));
-  
-  arc(280, 320, 15, 10, radians(180), radians(0));
-  arc(295, 320, 15, 10, radians(0), radians(180));
-  arc(310, 320, 15, 10, radians(180), radians(0));
-  arc(325, 320, 15, 10, radians(0), radians(180));
+  arc(tamagotchi.x + 175, tamagotchi.y + 250, 15, 10, radians(180), radians(0));
+  arc(tamagotchi.x + 190, tamagotchi.y + 250, 15, 10, radians(0), radians(180));
+  arc(tamagotchi.x + 205, tamagotchi.y + 250, 15, 10, radians(180), radians(0));
+  arc(tamagotchi.x + 220, tamagotchi.y + 250, 15, 10, radians(0), radians(180));
+
+  arc(tamagotchi.x + 180, tamagotchi.y + 270, 15, 10, radians(180), radians(0));
+  arc(tamagotchi.x + 195, tamagotchi.y + 270, 15, 10, radians(0), radians(180));
+  arc(tamagotchi.x + 210, tamagotchi.y + 270, 15, 10, radians(180), radians(0));
+  arc(tamagotchi.x + 225, tamagotchi.y + 270, 15, 10, radians(0), radians(180));
 }
 function tiredLook() {
   //Eyes half closed
@@ -472,28 +520,27 @@ function tiredLook() {
 
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(233, 182, 30, 15)  
-  rect(336, 182, 30, 15)
+  rect(tamagotchi.x + 133, tamagotchi.y + 132, 30, 15)  
+  rect(tamagotchi.x + 236, tamagotchi.y + 132, 30, 15)
   stroke(93, 51, 48); //brown   
   strokeWeight(2); 
-  arc(249, 195, 30, 15, radians(10), radians(170))
-  arc(352, 195, 30, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 149, tamagotchi.y + 145, 30, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 252, tamagotchi.y + 145, 30, 15, radians(10), radians(170))
 
   //Under the eye
   strokeWeight(2);
   stroke(93, 51, 48); //brown
   noFill();
-  arc(249, 210, 23, 15, radians(10), radians(170))
-  arc(353, 210, 23, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 149, tamagotchi.y + 160, 23, 15, radians(10), radians(170))
+  arc(tamagotchi.x + 253, tamagotchi.y + 160, 23, 15, radians(10), radians(170))
 }
 function dirtyLook() {
   const dirtSpots = [
-    [205, 260, 20, 50, 10, 100],
-    [310, 280, 50, 30, 10, 120],
-    [385, 300, 35, 40, 50, 130],
-    [250, 300, 30, 20, 15, 110],  
-    [385, 240, 40, 25, 60, 90],   
-    //[300, 180, 15, 60, 90, 140],   
+    [tamagotchi.x + 105, tamagotchi.y + 210, 20, 50, 10, 100],
+    [tamagotchi.x + 210, tamagotchi.y + 230, 50, 30, 10, 120],
+    [tamagotchi.x + 285, tamagotchi.y + 250, 35, 40, 50, 130],
+    [tamagotchi.x + 150, tamagotchi.y + 250, 30, 20, 15, 110],  
+    [tamagotchi.x + 285, tamagotchi.y + 190, 40, 25, 60, 90],      
   ];
   
   for (let i = 0; i < dirtSpots.length; i += 1) {
@@ -508,11 +555,11 @@ function dirtyLook() {
   }
 
   const splatters = [
-    [230, 270, 10, 10, 0, 80],
-    [320, 250, 15, 15, 0, 90],
-    [370, 330, 8, 8, 0, 70],
-    [280, 310, 12, 12, 0, 85],
-    [290, 200, 10, 10, 0, 75]
+    [tamagotchi.x + 130, tamagotchi.y + 220, 10, 10, 0, 80],
+    [tamagotchi.x + 220, tamagotchi.y + 200, 15, 15, 0, 90],
+    [tamagotchi.x + 270, tamagotchi.y + 280, 8, 8, 0, 70],
+    [tamagotchi.x + 180, tamagotchi.y + 260, 12, 12, 0, 85],
+    [tamagotchi.x + 190, tamagotchi.y + 150, 10, 10, 0, 75]
   ];
 
   for (let i = 0; i < splatters.length; i += 1) {
@@ -530,55 +577,55 @@ function dirtyLook() {
 function mouthOpen() {
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(270, 195, 60, 50);
+  rect(tamagotchi.x + 170, tamagotchi.y + 145, 60, 50);
 
   fill(30);
   strokeWeight(2);
   stroke(93, 51, 48); //brown
-  ellipse(300, 230, 50, 20);
+  ellipse(tamagotchi.x + 200, tamagotchi.y + 180, 50, 20);
 
   fill(234, 150, 230); //pink
   strokeWeight(0);
-  ellipse(300, 236, 20, 5);
+  ellipse(tamagotchi.x + 200, tamagotchi.y + 186, 20, 5);
 }
 function mouthHappy() {
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(270, 195, 60, 50);
+  rect(tamagotchi.x + 170, tamagotchi.y + 145, 60, 50);
 
   noFill();
   strokeWeight(2);
   stroke(93, 51, 48); //brown
-  arc(300, 230, 50, 20, 0, radians(180))
+  arc(tamagotchi.x + 200, tamagotchi.y + 180, 50, 20, 0, radians(180))
 }
 function mouthNeutral() {
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(270, 195, 60, 50);
+  rect(tamagotchi.x + 170, tamagotchi.y + 145, 60, 50);
   //neutral mouth
 }
 function mouthUnhappy() {
   fill(196, 221, 138); //green
   strokeWeight(0);
-  rect(270, 195, 60, 50);
+  rect(tamagotchi.x + 170, tamagotchi.y + 145, 60, 50);
 
   noFill();
   strokeWeight(2);
   stroke(93, 51, 48); //brown
-  arc(300, 230, 50, 20, radians(180), radians(0))
+  arc(tamagotchi.x + 200, tamagotchi.y + 180, 50, 20, radians(180), radians(0))
 }
 
 function eyesClosed() {
   strokeWeight(0);
   fill(196, 221, 138); //green
-  ellipse(249, 199, 32, 32);
-  ellipse(353, 200, 32, 32); 
+  ellipse(tamagotchi.x + 149, tamagotchi.y + 149, 32, 32);
+  ellipse(tamagotchi.x + 253, tamagotchi.y + 150, 32, 32); 
 
   strokeWeight(2.5);
   stroke(93, 51, 48); //brown
   noFill();
-  arc(249, 195, 23, 30, radians(10), radians(170))
-  arc(352, 195, 23, 30, radians(10), radians(170))
+  arc(tamagotchi.x + 149, tamagotchi.y + 145, 23, 30, radians(10), radians(170))
+  arc(tamagotchi.x + 252, tamagotchi.y + 145, 23, 30, radians(10), radians(170))
 }
 function eyesOpen() {
 
@@ -586,17 +633,17 @@ function eyesOpen() {
 function eyesDead() {
   strokeWeight(3);
   stroke(93, 51, 48); //brown
-  line(235, 195, 260, 185); //left eye
-  line(235, 185, 260, 195); //left eye
+  line(tamagotchi.x + 135, tamagotchi.y + 145, tamagotchi.x + 160, tamagotchi.y + 135); //left eye
+  line(tamagotchi.x + 135, tamagotchi.y + 135, tamagotchi.x + 160, tamagotchi.y + 145); //left eye
   
-  line(340, 195, 365, 185); //right eye
-  line(340, 185, 365, 195); //right eye
+  line(tamagotchi.x + 240, tamagotchi.y + 145, tamagotchi.x + 265, tamagotchi.y + 135); //right eye
+  line(tamagotchi.x + 240, tamagotchi.y + 135, tamagotchi.x + 265, tamagotchi.y + 145); //right eye
 }
 
 function tongueFollow(whatIsFed) {
     strokeWeight(5);
     stroke(234, 150, 230); //pink
-    line(300, 236, mouseX, mouseY);
+    line(tamagotchi.x + 200, tamagotchi.y + 186, mouseX, mouseY);
     stroke(93, 51, 48); //brown
 
     if(feedingIsSet == false) {
@@ -608,61 +655,78 @@ function tongueFollow(whatIsFed) {
 
 //Store
 function drawStore() {
-  if (store.shown) {
-    strokeWeight(5);
-    stroke(93, 51, 48); //brown
-    fill(249, 224, 160);
-    rect(450, 110, 155, 230);
+  if (!store.shown) {
+    store.button.show();
+  } else if (store.shown) {
+    store.openButton.show();
+  }
 
-    strokeWeight(5);
-    stroke(93, 51, 48); //brown
-    line(450, 150, 600, 150);
-
-    //Store Titel
-    strokeWeight(1);
-    stroke(93, 51, 48); //brown
-    fill(93, 51, 48); //brown
-    textSize(30);
-    text("Store", 500, 140);
-
-    //Fly
-    image(foodIcon.flyImage, 455, 165, foodIcon.flySize / 2, foodIcon.flySize / 2);
-    textSize(20);
-    text(`= ${foodIcon.flyPrice}`, 500, 200)
-    image(coin.image, 535, 175, coin.size / 1.5, coin.size / 1.5);
-    
-    //Worms
-    image(foodIcon.wormsImage, 460, 220, foodIcon.wormsSize / 2, foodIcon.wormsSize / 2);
-    textSize(20);
-    text(`= ${foodIcon.wormsPrice}`, 500, 250)
-    image(coin.image, 535, 225, coin.size / 1.5, coin.size / 1.5);
-    
-    //Medicine
-    image(foodIcon.medicineImage, 460, 270, foodIcon.medicineSize / 2, foodIcon.medicineSize / 2);
-    textSize(20);
-    text(`= ${foodIcon.medicinePrice}`, 500, 300)
-    image(coin.image, 535, 275, coin.size / 1.5, coin.size / 1.5);
-
-    store.buttonBuyFly.show();
-    store.buttonBuyWorms.show();
-    store.buttonBuyMedicine.show();
-  } else if (!store.shown) {
-    strokeWeight(5);
-    stroke(93, 51, 48); //brown
-    fill(249, 224, 160);
-    rect(580, 110, 25, 230);
-
-    strokeWeight(5);
-    stroke(93, 51, 48); //brown
-    line(580, 150, 600, 150);
-
-    image(foodIcon.flyImage, 585, 165, foodIcon.flySize / 2, foodIcon.flySize / 2);
-    image(foodIcon.wormsImage, 590, 220, foodIcon.wormsSize / 2, foodIcon.wormsSize / 2);
-    image(foodIcon.medicineImage, 590, 270, foodIcon.medicineSize / 2, foodIcon.medicineSize / 2);
-
+  if (room.current == 3) {
+    if (store.shown) {
+      store.openButton.show();
+      strokeWeight(5);
+      stroke(93, 51, 48); //brown
+      fill(249, 224, 160);
+      rect(450, 110, 155, 230);
+  
+      strokeWeight(5);
+      stroke(93, 51, 48); //brown
+      line(450, 150, 600, 150);
+  
+      //Store Titel
+      strokeWeight(1);
+      stroke(93, 51, 48); //brown
+      fill(93, 51, 48); //brown
+      textSize(30);
+      text("Store", 500, 140);
+  
+      //Fly
+      image(foodIcon.flyImage, 455, 165, foodIcon.flySize / 2, foodIcon.flySize / 2);
+      textSize(20);
+      text(`= ${foodIcon.flyPrice}`, 500, 200)
+      image(coin.image, 535, 175, coin.size / 1.5, coin.size / 1.5);
+      
+      //Worms
+      image(foodIcon.wormsImage, 460, 220, foodIcon.wormsSize / 2, foodIcon.wormsSize / 2);
+      textSize(20);
+      text(`= ${foodIcon.wormsPrice}`, 500, 250)
+      image(coin.image, 535, 225, coin.size / 1.5, coin.size / 1.5);
+      
+      //Medicine
+      image(foodIcon.medicineImage, 460, 270, foodIcon.medicineSize / 2, foodIcon.medicineSize / 2);
+      textSize(20);
+      text(`= ${foodIcon.medicinePrice}`, 500, 300)
+      image(coin.image, 535, 275, coin.size / 1.5, coin.size / 1.5);
+  
+      store.buttonBuyFly.show();
+      store.buttonBuyWorms.show();
+      store.buttonBuyMedicine.show();
+    } else if (!store.shown) {
+      store.button.show();
+      strokeWeight(5);
+      stroke(93, 51, 48); //brown
+      fill(249, 224, 160);
+      rect(580, 110, 25, 230);
+  
+      strokeWeight(5);
+      stroke(93, 51, 48); //brown
+      line(580, 150, 600, 150);
+  
+      image(foodIcon.flyImage, 585, 165, foodIcon.flySize / 2, foodIcon.flySize / 2);
+      image(foodIcon.wormsImage, 590, 220, foodIcon.wormsSize / 2, foodIcon.wormsSize / 2);
+      image(foodIcon.medicineImage, 590, 270, foodIcon.medicineSize / 2, foodIcon.medicineSize / 2);
+  
+      store.buttonBuyFly.hide();
+      store.buttonBuyWorms.hide();
+      store.buttonBuyMedicine.hide();
+    }
+  } else {
     store.buttonBuyFly.hide();
     store.buttonBuyWorms.hide();
     store.buttonBuyMedicine.hide();
+
+    store.button.hide();
+    store.openButton.hide();
   }
 }
 
@@ -1201,31 +1265,33 @@ function showPercentage() {
 //Icons
 function drawIcons() {
   //Food
-  if (currentlyDragging == foodIcon.name) {
-    image(foodIcon.image, foodIcon.x - 2.5, foodIcon.y - 2.5, foodIcon.size + 5, foodIcon.size + 5);
-  } else {
-    image(foodIcon.image, foodIcon.x, foodIcon.y);
-  }
-
-  if (foodIcon.rollingMenu) {
-    stroke(93, 51, 48);
-    strokeWeight(2)
-    line(foodIcon.x - 30, foodIcon.y - 15, foodIcon.x + 75, foodIcon.y - 15)
-
-    strokeWeight(4)
-    stroke(93, 51, 48)
-    line(foodIcon.x - 25, foodIcon.y + 13, foodIcon.x - 5, foodIcon.y + 13)
-  } else if (!foodIcon.rollingMenu) {
-    strokeWeight(4)
-    stroke(93, 51, 48)
-    line(foodIcon.x - 25, foodIcon.y + 13, foodIcon.x - 5, foodIcon.y + 13)
-    line(foodIcon.x - 15, foodIcon.y + 3, foodIcon.x - 15, foodIcon.y + 23)
+  if (room.current == 3) {
+    if (currentlyDragging == foodIcon.name) {
+      image(foodIcon.image, foodIcon.x - 2.5, foodIcon.y - 2.5, foodIcon.size + 5, foodIcon.size + 5);
+    } else {
+      image(foodIcon.image, foodIcon.x, foodIcon.y);
+    }
+  
+    if (foodIcon.rollingMenu) {
+      stroke(93, 51, 48);
+      strokeWeight(2)
+      line(foodIcon.x - 30, foodIcon.y - 15, foodIcon.x + 75, foodIcon.y - 15)
+  
+      strokeWeight(4)
+      stroke(93, 51, 48)
+      line(foodIcon.x - 25, foodIcon.y + 13, foodIcon.x - 5, foodIcon.y + 13)
+    } else if (!foodIcon.rollingMenu) {
+      strokeWeight(4)
+      stroke(93, 51, 48)
+      line(foodIcon.x - 25, foodIcon.y + 13, foodIcon.x - 5, foodIcon.y + 13)
+      line(foodIcon.x - 15, foodIcon.y + 3, foodIcon.x - 15, foodIcon.y + 23)
+    }
   }
 
 
 
   //Food Fly
-  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.flyName && foodIcon.flyAmount > 0) {
+  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.flyName && foodIcon.flyAmount > 0 && room.current == 3) {
     image(foodIcon.flyImage, foodIcon.flyX, foodIcon.flyY);
 
     fill(93, 51, 48);
@@ -1235,7 +1301,7 @@ function drawIcons() {
     text(foodIcon.flyAmount, foodIcon.flyX - 20, foodIcon.flyY + 60);
     
     image(foodIcon.flyImage, mouseX - (foodIcon.flySize/2), mouseY - (foodIcon.flySize/2));
-  } else if (foodIcon.rollingMenu) {
+  } else if (foodIcon.rollingMenu && room.current == 3) {
     image(foodIcon.flyImage, foodIcon.flyX, foodIcon.flyY);
 
     fill(93, 51, 48);
@@ -1246,7 +1312,7 @@ function drawIcons() {
   }
 
   //Food Worms
-  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.wormsName && foodIcon.wormsAmount > 0) {
+  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.wormsName && foodIcon.wormsAmount > 0 && room.current == 3) {
     image(foodIcon.wormsImage, foodIcon.wormsX, foodIcon.wormsY);
 
     fill(93, 51, 48);
@@ -1256,7 +1322,7 @@ function drawIcons() {
     text(foodIcon.wormsAmount, foodIcon.wormsX - 35, foodIcon.wormsY + 60);
 
     image(foodIcon.wormsImage, mouseX - (foodIcon.wormsSize/2), mouseY - (foodIcon.wormsSize/2));
-  } else if (foodIcon.rollingMenu) {
+  } else if (foodIcon.rollingMenu && room.current == 3) {
     image(foodIcon.wormsImage, foodIcon.wormsX, foodIcon.wormsY);
 
     fill(93, 51, 48);
@@ -1267,7 +1333,7 @@ function drawIcons() {
   }
 
   //Food Medicine
-  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.medicineName && foodIcon.medicineAmount > 0) {
+  if (foodIcon.rollingMenu && currentlyDragging == foodIcon.medicineName && foodIcon.medicineAmount > 0 && room.current == 3) {
     image(foodIcon.medicineImage, foodIcon.medicineX, foodIcon.medicineY);
 
     fill(93, 51, 48);
@@ -1277,7 +1343,7 @@ function drawIcons() {
     text(foodIcon.medicineAmount, foodIcon.medicineX - 35, foodIcon.medicineY + 50);
 
     image(foodIcon.medicineImage, mouseX - (foodIcon.medicineSize/2), mouseY - (foodIcon.medicineSize/2));
-  } else if (foodIcon.rollingMenu) {
+  } else if (foodIcon.rollingMenu && room.current == 3) {
     image(foodIcon.medicineImage, foodIcon.medicineX, foodIcon.medicineY);
 
     fill(93, 51, 48);
@@ -1288,23 +1354,23 @@ function drawIcons() {
   }
 
   //Sleep
-  if (currentlyDragging == sleepIcon.name) {
+  if (currentlyDragging == sleepIcon.name && room.current == 2) {
     image(sleepIcon.image, mouseX - (sleepIcon.size/2), mouseY - (sleepIcon.size/2), sleepIcon.size + 5, sleepIcon.size + 5);
-  } else {
+  } else if (room.current == 2) {
     image(sleepIcon.image, sleepIcon.x, sleepIcon.y);
   }
 
   //Play
-  if (currentlyDragging == playIcon.name) {
+  if (currentlyDragging == playIcon.name && room.current == 4) {
     image(playIcon.image, playIcon.x - 2.5, playIcon.y - 2.5, playIcon.size + 5, playIcon.size + 5);
-  } else {
+  } else if (room.current == 4) {
     image(playIcon.image, playIcon.x, playIcon.y);
   }
 
   //Clean
-  if (currentlyDragging == cleanIcon.name) {
+  if (currentlyDragging == cleanIcon.name && room.current == 1) {
     image(cleanIcon.image, mouseX - (cleanIcon.size/2), mouseY - (cleanIcon.size/2), cleanIcon.size + 5, cleanIcon.size + 5);
-  } else {
+  } else if (room.current == 1) {
     image(cleanIcon.image, cleanIcon.x, cleanIcon.y);
   }
 } 
@@ -1312,7 +1378,7 @@ function drawIcons() {
 function mousePressed() {
   //Food Icon
   if (mouseX > foodIcon.x && mouseX < foodIcon.x + 100 && 
-      mouseY > foodIcon.y && mouseY < foodIcon.y + 100) {
+      mouseY > foodIcon.y && mouseY < foodIcon.y + 100 && room.current == 3) {
     currentlyDragging = foodIcon.name;
 
     if (foodIcon.rollingMenu == true) {
@@ -1324,31 +1390,31 @@ function mousePressed() {
 
   //Food Icon Fly
   if (mouseX > foodIcon.flyX && mouseX < foodIcon.flyX + 100 && 
-      mouseY > foodIcon.flyY && mouseY < foodIcon.flyY + 100) {
+      mouseY > foodIcon.flyY && mouseY < foodIcon.flyY + 100 && room.current == 3) {
     currentlyDragging = foodIcon.flyName;
   }
 
   //Food Icon Worms
   if (mouseX > foodIcon.wormsX && mouseX < foodIcon.wormsX + 100 && 
-      mouseY > foodIcon.wormsY && mouseY < foodIcon.wormsY + 100) {
+      mouseY > foodIcon.wormsY && mouseY < foodIcon.wormsY + 100 && room.current == 3) {
     currentlyDragging = foodIcon.wormsName;
   }
 
   //Food Icon Medicine
   if (mouseX > foodIcon.medicineX && mouseX < foodIcon.medicineX + 100 && 
-      mouseY > foodIcon.medicineY && mouseY < foodIcon.medicineY + 100) {
+      mouseY > foodIcon.medicineY && mouseY < foodIcon.medicineY + 100 && room.current == 3) {
     currentlyDragging = foodIcon.medicineName;
   }
 
   //Sleep Icon
   if (mouseX > sleepIcon.x && mouseX < sleepIcon.x + 100 && 
-      mouseY > sleepIcon.y && mouseY < sleepIcon.y + 100) {
+      mouseY > sleepIcon.y && mouseY < sleepIcon.y + 100 && room.current == 2) {
     currentlyDragging = sleepIcon.name;
   }
 
   //Play Icon
   if (mouseX > playIcon.x && mouseX < playIcon.x + 100 && 
-      mouseY > playIcon.y && mouseY < playIcon.y + 100) {
+      mouseY > playIcon.y && mouseY < playIcon.y + 100 && room.current == 4) {
       currentlyDragging = playIcon.name;
       
     if(playingIsSet == false) {
@@ -1359,7 +1425,7 @@ function mousePressed() {
   
   //Clean Icon
   if (mouseX > cleanIcon.x && mouseX < cleanIcon.x + 100 && 
-      mouseY > cleanIcon.y && mouseY < cleanIcon.y + 100) {
+      mouseY > cleanIcon.y && mouseY < cleanIcon.y + 100 && room.current == 1) {
     currentlyDragging = cleanIcon.name;
   }
 
@@ -1371,18 +1437,15 @@ function mouseReleased() {
 
 
 function draw() {    
-  background(135, 206, 265);
+  //background(135, 206, 265);
+  drawBackground();
   console.log(`${round(sickness.timerUntilSickness)}`);
   if (!isDead) {
     tamagotchi.nameButton.show();
     reloadButton.show();
     store.button.hide();
     store.openButton.hide();
-    if (!store.shown) {
-      store.button.show();
-    } else if (store.shown) {
-      store.openButton.show();
-    }
+
     drawStore();
     drawName();
     drawCoins();
@@ -1392,13 +1455,6 @@ function draw() {
     drawIcons();  
     drawSickness();
   } else if (isDead) {
-    tamagotchi.nameButton.hide();    
-    reloadButton.hide();
-    store.button.hide();
-    store.openButton.hide();
-    store.buttonBuyFly.hide();
-    store.buttonBuyWorms.hide();
-    store.buttonBuyMedicine.hide();
     isNowDead();
   }
 }
