@@ -1173,7 +1173,7 @@ function showPercentage() {
   }
   
   //HealthBar
-  if (mouseX >= sickness.barX && mouseX <= (sickness.barX + sickness.barSize) && mouseY >= sickness.barY && mouseY <= (sickness.barY + sickness.barSize)) {
+  if (mouseX >= sickness.barX && mouseX <= (sickness.barX + sickness.barSize) && mouseY >= sickness.barY && mouseY <= (sickness.barY + sickness.barSize) && sickness.isSick) {
     textSize(15);
     strokeWeight(0);
     fill(0);
