@@ -274,17 +274,19 @@ function isNowDead() {
     fill("red");
     strokeWeight(1);
     stroke("red");
+    textAlign(CENTER);
     if (energyBar.score <= 0) {
-      text(`${tamagotchi.name} died of lack of energy...`, 190, 100);
+      text(`${tamagotchi.name} died of lack of energy...`, 300, 100);
     } else if (hungerBar.score <= 0) {
-      text(`${tamagotchi.name} died of hunger...`,  210, 100);
+      text(`${tamagotchi.name} died of hunger...`,  300, 100);
     } else if (happinessBar.score <= 0) {
-      text(`${tamagotchi.name} died of sadness...`,  210, 100);
+      text(`${tamagotchi.name} died of sadness...`,  300, 100);
     } else if (healthBar.score <= 0) {
-      text(`${tamagotchi.name} died of being too unhealthy...`,  160, 100);
+      text(`${tamagotchi.name} died of being too unhealthy...`,  300, 100);
     } else if (sickness.isSick) {
-      text(`${tamagotchi.name} died of an unknown disease...`,  150, 100);
+      text(`${tamagotchi.name} died of an unknown disease...`,  300, 100);
     }
+    textAlign(LEFT);
 
     image(tamagotchi.image, tamagotchi.x, tamagotchi.y);
   
@@ -352,13 +354,13 @@ function drawFrog() {
   }
 
   
-  if (foodIcon.flyAmount > 0 && currentlyDragging == foodIcon.flyName) {
+  if (foodIcon.flyAmount > 0 && currentlyDragging == foodIcon.flyName && foodIcon.rollingMenu) {
     mouthOpen()
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
       tongueFollow(isNowFeeding)
     }
   }
-  if (foodIcon.wormsAmount > 0 && currentlyDragging == foodIcon.wormsName) {
+  if (foodIcon.wormsAmount > 0 && currentlyDragging == foodIcon.wormsName && foodIcon.rollingMenu) {
     mouthOpen();
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
       tongueFollow(isNowFeeding)
@@ -369,7 +371,7 @@ function drawFrog() {
     sickLook();
   }
 
-  if (foodIcon.medicineAmount > 0 && currentlyDragging == foodIcon.medicineName) {
+  if (foodIcon.medicineAmount > 0 && currentlyDragging == foodIcon.medicineName && foodIcon.rollingMenu) {
     mouthOpen();
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
       tongueFollow(isNowFeedingMedicine)
@@ -880,7 +882,9 @@ function drawName() {
   textSize(30);
 
   if (!tamagotchi.nameFieldShown) {
-    text(tamagotchi.name, (width/2) - (tamagotchi.name.length * 8), 135); // Centered horizontally at width/2
+    textAlign(CENTER);
+    text(tamagotchi.name, 300, 135);
+    textAlign(LEFT);
   }
 }
 
@@ -913,7 +917,7 @@ function keyPressed() {
 function drawBars() {
   stroke(0, 0, 0);
   strokeWeight(3);
-
+  
   //Energy
   colorOfBar(energyBar.score); 
   strokeWeight(0);
@@ -953,6 +957,8 @@ function drawBars() {
   rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size);
   image(healthBar.image, healthBar.x + 2.5, healthBar.y + 2.5);
   scoreBarFillingHealth();
+
+  showPercentage();
 }
 
 function isNowFeeding() {
@@ -1131,6 +1137,51 @@ function scoreBarFillingHealth() {
   localStorage.setItem("healthBar.score", healthBar.score);
 }
 
+function showPercentage() {
+  textAlign(CENTER);
+
+  //EnergyBar
+  if (mouseX >= energyBar.x && mouseX <= (energyBar.x + energyBar.size) && mouseY >= energyBar.y && mouseY <= (energyBar.y + energyBar.size)) {
+    textSize(15);
+    strokeWeight(0);
+    fill(0);
+    text(`${round(energyBar.score)}%`, (energyBar.x + (energyBar.size / 2)), (energyBar.y + energyBar.size + 15));
+  }
+  
+  //HungerBar
+  if (mouseX >= hungerBar.x && mouseX <= (hungerBar.x + hungerBar.size) && mouseY >= hungerBar.y && mouseY <= (hungerBar.y + hungerBar.size)) {
+    textSize(15);
+    strokeWeight(0);
+    fill(0);
+    text(`${round(hungerBar.score)}%`, (hungerBar.x + (hungerBar.size / 2)), (hungerBar.y + hungerBar.size + 15));
+  }
+  
+  //HappinessBar
+  if (mouseX >= happinessBar.x && mouseX <= (happinessBar.x + happinessBar.size) && mouseY >= happinessBar.y && mouseY <= (happinessBar.y + happinessBar.size)) {
+    textSize(15);
+    strokeWeight(0);
+    fill(0);
+    text(`${round(happinessBar.score)}%`, (happinessBar.x + (happinessBar.size / 2)), (happinessBar.y + happinessBar.size + 15));
+  }
+  
+  //HealthBar
+  if (mouseX >= healthBar.x && mouseX <= (healthBar.x + healthBar.size) && mouseY >= healthBar.y && mouseY <= (healthBar.y + healthBar.size)) {
+    textSize(15);
+    strokeWeight(0);
+    fill(0);
+    text(`${round(healthBar.score)}%`, (healthBar.x + (healthBar.size / 2)), (healthBar.y + healthBar.size + 15));
+  }
+  
+  //HealthBar
+  if (mouseX >= sickness.barX && mouseX <= (sickness.barX + sickness.barSize) && mouseY >= sickness.barY && mouseY <= (sickness.barY + sickness.barSize)) {
+    textSize(15);
+    strokeWeight(0);
+    fill(0);
+    text(`${round(sickness.barScore)}%`, (sickness.barX + (sickness.barSize / 2)), (sickness.barY + sickness.barSize + 15));
+  }
+  
+  textAlign(LEFT);
+}
 
 //Icons
 function drawIcons() {
