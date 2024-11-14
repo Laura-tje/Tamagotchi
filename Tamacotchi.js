@@ -24,6 +24,7 @@ let playingIsSet = false;
 let feedingIsSet = false;
 
 let room = {
+  y: 490,
   current: 2,
   graveyard: null,
   bathroom: null,
@@ -166,8 +167,8 @@ let playIcon = {
 let cleanIcon = {
   name: "clean",
   image: null,
-  x: 350,
-  y: 400,
+  x: 170,
+  y: 100,
   size: 80,
 };
 
@@ -378,49 +379,49 @@ function drawRoom() {
     room.buttonForward.hide();
     room.buttonBackward.hide();
   } else if (room.current == 1) {
-    image(room.bathroom, 0, 0);
+    drawBathroom();
     room.buttonForward.show();
     room.buttonBackward.show();
-    text("Bathroom", 300, 490);
+    text("Bathroom", 300, room.y);
   } else if (room.current == 2) {
-    image(room.bedroom, 0, 0);
+    drawBedroom();
     room.buttonForward.show();
     room.buttonBackward.show();
-    text("Bedroom", 300, 490);
+    text("Bedroom", 300, room.y);
   } else if (room.current == 3) {
-    image(room.kitchen, 0, 0);
+    drawKitchen();
     room.buttonForward.show();
     room.buttonBackward.show();
-    text("Kitchen", 300, 490);
+    text("Kitchen", 300, room.y);
   } else if (room.current == 4) {
-    image(room.playroom, 0, 0);
+    drawPlayroom();
     room.buttonForward.show();
     room.buttonBackward.show();
-    text("Outside", 300, 490);
+    text("Outside", 300, room.y);
   }
   textAlign(LEFT);
 }
 
 function drawRoomButtons() {
   room.buttonForward = createButton(">");
-  room.buttonForward.position(305, tamagotchi.y + 95);
-  room.buttonForward.size(20, 20)
+  room.buttonForward.position(370, room.y - 23);
+  room.buttonForward.size(25, 25)
   room.buttonForward.mousePressed(buttonRoomForward);
   //room.buttonForward.style("background-color", "#5d3330");
   //room.buttonForward.style("border", "#5d3330");
   //room.buttonForward.style("color", "#f9e0a0");
-  room.buttonForward.style("padding", "0")
-  room.buttonForward.style("text-align", "center")
+  room.buttonForward.style("padding", "0");
+  room.buttonForward.style("text-align", "center");
 
   room.buttonBackward = createButton("<");
-  room.buttonBackward.position(275, tamagotchi.y + 95);
-  room.buttonBackward.size(20, 20)
+  room.buttonBackward.position(205, room.y - 23);
+  room.buttonBackward.size(25, 25)
   room.buttonBackward.mousePressed(buttonRoomBackward);
   //room.buttonBackward.style("background-color", "#5d3330");
   //room.buttonBackward.style("border", "#5d3330");
   //room.buttonBackward.style("color", "#f9e0a0");
-  room.buttonBackward.style("padding", "0")
-  room.buttonBackward.style("text-align", "center")
+  room.buttonBackward.style("padding", "0");
+  room.buttonBackward.style("text-align", "center");
 }
 
 function buttonRoomBackward() {
@@ -436,6 +437,19 @@ function buttonRoomForward() {
   } else if (room.current == 4) {
     room.current = 1;
   }
+}
+
+function drawBathroom() {
+  image(room.bathroom, 0, 0);
+}
+function drawBedroom() {
+  image(room.bedroom, 0, 0);
+}
+function drawKitchen() {
+  image(room.kitchen, 0, 0);
+}
+function drawPlayroom() {
+  image(room.playroom, 0, 0);
 }
 
 
@@ -1045,7 +1059,7 @@ function showNameInput() {
     tamagotchi.nameFieldShown = true;
     tamagotchi.nameField = createInput();
     tamagotchi.nameField.style("text-align", "center");
-    tamagotchi.nameField.position((width/2) - 55, tamagotchi.y + 60);
+    tamagotchi.nameField.position((width/2) - 52.5, tamagotchi.y + 60);
     tamagotchi.nameField.size(100, 30);
     tamagotchi.nameField.show();
   }
