@@ -1,4 +1,3 @@
-
 let canvas;
 
 let sickness = {
@@ -25,11 +24,15 @@ let playingIsSet = false;
 let feedingIsSet = false;
 
 let room = {
-  current: 1,
+  current: 2,
+  graveyard: null,
   bathroom: null,
   kitchen: null,
   bedroom: null,
   playroom: null,
+  buttonForward: null,
+  buttonBackward: null,
+  lastRoom: 0,
 }
 
 let store = {
@@ -55,7 +58,7 @@ let tamagotchi = {
   nameFieldShown: false,
   image: null,
   x: 100,
-  y: 50,
+  y: 150,
   size: 400
 };
 let coin = {
@@ -156,7 +159,7 @@ let sleepIcon = {
 let playIcon = {
   name: "play",
   image: null,
-  x: 200,
+  x: 100,
   y: 400,
   size: 80,
 };
@@ -183,7 +186,8 @@ function preload() {
   sickness.thermometerImage = loadImage("assets/thermometer.png");
 
   //Rooms
-  room.bathroom = loadImage("assets/bathroom.png");
+  room.graveyard = loadImage("assets/graveyard.png");
+  room.bathroom = loadImage("assets/bathroom2.png");
   room.kitchen = loadImage("assets/kitchen.png");
   room.bedroom = loadImage("assets/bedroom.png");
   room.playroom = loadImage("assets/playroom.png");
@@ -209,14 +213,13 @@ function setup() {
   createCanvas(600, 500);
   canvas.position(0, 0);
 
-
-
   tamagotchi.image.resize(tamagotchi.size, tamagotchi.size);
   coin.image.resize(coin.size, coin.size);
   deaths.image.resize(deaths.size, deaths.size);
   sickness.barImage.resize(sickness.barSize, sickness.barSize);
   sickness.thermometerImage.resize(sickness.thermometerSize, sickness.thermometerSize);
 
+  room.graveyard.resize(600, 500);
   room.bathroom.resize(600, 500);
   room.kitchen.resize(600, 500);
   room.bedroom.resize(600, 500);
@@ -234,6 +237,7 @@ function setup() {
   drawBuyFlyButton();
   drawBuyWormsButton();
   drawBuyMedicineButton();
+  drawRoomButtons();
 
   sickness.barScore = localStorage.getItem("sickness.barScore") ? parseFloat(localStorage.getItem("sickness.barScore")) : 100;
   sickness.isSick = localStorage.getItem("sickness.isSick") ? parseFloat(localStorage.getItem("sickness.isSick")) : false;
@@ -267,10 +271,13 @@ function setup() {
   playIcon.image.resize(playIcon.size, playIcon.size);
   cleanIcon.image.resize(cleanIcon.size, cleanIcon.size);
   
-  drawBackground();
+  drawRoom();
 }
 function isNowDead() {
-  room.current = 0;
+  if (room.lastRoom == 0) {
+    room.lastRoom = room.current;
+    room.current = 0;
+  }
 
   tamagotchi.nameButton.hide();    
   reloadButton.hide();
@@ -279,6 +286,9 @@ function isNowDead() {
   store.buttonBuyFly.hide();
   store.buttonBuyWorms.hide();
   store.buttonBuyMedicine.hide();
+  room.buttonForward.hide();
+  room.buttonBackward.hide();
+  //tamagotchi.nameField.hide();
 
   if (reloadTimer == 8) { //logs the cause of death to the console :)
     if (energyBar.score <= 0) {
@@ -305,15 +315,15 @@ function isNowDead() {
     stroke("red");
     textAlign(CENTER);
     if (energyBar.score <= 0) {
-      text(`${tamagotchi.name} died of lack of energy...`, 300, 100);
+      text(`${tamagotchi.name} died of lack of energy...`, 300, tamagotchi.y + 50);
     } else if (hungerBar.score <= 0) {
-      text(`${tamagotchi.name} died of hunger...`,  300, 100);
+      text(`${tamagotchi.name} died of hunger...`,  300, tamagotchi.y + 50);
     } else if (happinessBar.score <= 0) {
-      text(`${tamagotchi.name} died of sadness...`,  300, 100);
+      text(`${tamagotchi.name} died of sadness...`,  300, tamagotchi.y + 50);
     } else if (healthBar.score <= 0) {
-      text(`${tamagotchi.name} died of being too unhealthy...`,  300, 100);
+      text(`${tamagotchi.name} died of being too unhealthy...`,  300, tamagotchi.y + 50);
     } else if (sickness.isSick) {
-      text(`${tamagotchi.name} died of an unknown disease...`,  300, 100);
+      text(`${tamagotchi.name} died of an unknown disease...`,  300, tamagotchi.y + 50);
     }
     textAlign(LEFT);
 
@@ -321,19 +331,20 @@ function isNowDead() {
   
     fill(196, 221, 138); //green
     strokeWeight(0);
-    rect(285, 195, 30, 20); //Mouth
-    ellipse(249, 199, 32, 32); //Eye
-    ellipse(353, 200, 32, 32); //Eye
+    rect(tamagotchi.x + 185, tamagotchi.y + 145, 30, 20); //Mouth
+    ellipse(tamagotchi.x + 149, tamagotchi.y + 149, 32, 32); //Eye
+    ellipse(tamagotchi.x + 253, tamagotchi.y + 150, 32, 32); //Eye
     
     eyesDead();
   
-    arc(300, 220, 20, 10, radians(190), radians(-10));
+    arc(tamagotchi.x + 200, tamagotchi.y + 170, 20, 10, radians(190), radians(-10));
+
     if (reloadTimer <= 5 && reloadTimer > 0) {
       textSize(20);
       fill("red");
       strokeWeight(1);
       stroke("red");
-      text("Restarting in: " + round(reloadTimer), 240, 400);
+      text("Restarting in: " + round(reloadTimer), tamagotchi.x + 140, tamagotchi.y + 80);
     }
   } else if (round(reloadTimer) <= 0) {
     energyBar.score = 100;
@@ -348,26 +359,83 @@ function isNowDead() {
     sickness.isSick = false;
     sickness.barScore = 100;    
     deaths.amount += 1;
-    room.current = 1; //this has to be something different but idk what!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    room.current = room.lastRoom; //this has to be something different but idk what!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    room.lastRoom = 0;
   }
 }
 
-//background
-function drawBackground() {
+//Rooms
+function drawRoom() {
   //background(135, 206, 265); //this has to go eventually
 
+  stroke(93, 51, 48); //brown
+  strokeWeight(3);
+  fill(160, 110, 86); //brown
+  textSize(30);
+  textAlign(CENTER);
   if (room.current == 0) {
-    background(135, 206, 265); //this has to go eventually
+    image(room.graveyard, 0, 0);
+    room.buttonForward.hide();
+    room.buttonBackward.hide();
   } else if (room.current == 1) {
-    image(room.bathroom, 0, 0, width, height);
+    image(room.bathroom, 0, 0);
+    room.buttonForward.show();
+    room.buttonBackward.show();
+    text("Bathroom", 300, 490);
   } else if (room.current == 2) {
     image(room.bedroom, 0, 0);
+    room.buttonForward.show();
+    room.buttonBackward.show();
+    text("Bedroom", 300, 490);
   } else if (room.current == 3) {
     image(room.kitchen, 0, 0);
+    room.buttonForward.show();
+    room.buttonBackward.show();
+    text("Kitchen", 300, 490);
   } else if (room.current == 4) {
     image(room.playroom, 0, 0);
+    room.buttonForward.show();
+    room.buttonBackward.show();
+    text("Outside", 300, 490);
   }
+  textAlign(LEFT);
+}
 
+function drawRoomButtons() {
+  room.buttonForward = createButton(">");
+  room.buttonForward.position(305, tamagotchi.y + 95);
+  room.buttonForward.size(20, 20)
+  room.buttonForward.mousePressed(buttonRoomForward);
+  //room.buttonForward.style("background-color", "#5d3330");
+  //room.buttonForward.style("border", "#5d3330");
+  //room.buttonForward.style("color", "#f9e0a0");
+  room.buttonForward.style("padding", "0")
+  room.buttonForward.style("text-align", "center")
+
+  room.buttonBackward = createButton("<");
+  room.buttonBackward.position(275, tamagotchi.y + 95);
+  room.buttonBackward.size(20, 20)
+  room.buttonBackward.mousePressed(buttonRoomBackward);
+  //room.buttonBackward.style("background-color", "#5d3330");
+  //room.buttonBackward.style("border", "#5d3330");
+  //room.buttonBackward.style("color", "#f9e0a0");
+  room.buttonBackward.style("padding", "0")
+  room.buttonBackward.style("text-align", "center")
+}
+
+function buttonRoomBackward() {
+  if (room.current != 0 && room.current != 1) {
+    room.current -= 1;
+  } else if (room.current == 1) {
+    room.current = 4;
+  }
+}
+function buttonRoomForward() {
+  if (room.current != 0 && room.current != 4) {
+    room.current += 1;
+  } else if (room.current == 4) {
+    room.current = 1;
+  }
 }
 
 
@@ -478,7 +546,7 @@ function sickLook() {
       currentlyDragging == foodIcon.medicineName && foodIcon.medicineAmount == 0 ) {
     fill(196, 221, 138); //green
     strokeWeight(0);
-    rect(270, 195, 60, 50);
+    rect(tamagotchi.x + 170, tamagotchi.y + 145, 60, 50);
     image(sickness.thermometerImage, tamagotchi.x + 80, tamagotchi.y + 125);
     
     fill(196, 221, 138); //green
@@ -956,13 +1024,13 @@ function restart() {
 //Name
 function drawName() {
   stroke(93, 51, 48); //brown
-  strokeWeight(1);
-  fill(93, 51, 48); //brown
+  strokeWeight(3);
+  fill(160, 110, 86); //brown
   textSize(30);
 
   if (!tamagotchi.nameFieldShown) {
     textAlign(CENTER);
-    text(tamagotchi.name, 300, 135);
+    text(tamagotchi.name, tamagotchi.x + 200, tamagotchi.y + 85);
     textAlign(LEFT);
   }
 }
@@ -975,10 +1043,11 @@ function drawRenameButton() {
 function showNameInput() { 
   if (!tamagotchi.nameFieldShown) {
     tamagotchi.nameFieldShown = true;
-    tamagotchi.nameField = createInput()
-    tamagotchi.nameField.position((width/2) - 50, 110)
+    tamagotchi.nameField = createInput();
+    tamagotchi.nameField.style("text-align", "center");
+    tamagotchi.nameField.position((width/2) - 55, tamagotchi.y + 60);
     tamagotchi.nameField.size(100, 30);
-    tamagotchi.nameField.show()
+    tamagotchi.nameField.show();
   }
 }
 function keyPressed() {
@@ -1438,7 +1507,7 @@ function mouseReleased() {
 
 function draw() {    
   //background(135, 206, 265);
-  drawBackground();
+  drawRoom();
   console.log(`${round(sickness.timerUntilSickness)}`);
   if (!isDead) {
     tamagotchi.nameButton.show();
