@@ -461,7 +461,7 @@ function drawFrog() {
   eyesOpen();
   
   if (currentlyDragging == "none") {
-    bubbles = [];
+    //bubbles = [];
   }
   if (currentlyDragging == playIcon.name) {
 
@@ -527,6 +527,9 @@ function drawFrog() {
       eyesClosed();    
       bubbles.push([mouseX, mouseY, (random(10, 40))]);
     }
+    cleaningLook();
+  }
+  if (bubbles) {
     cleaningLook();
   }
 }
@@ -946,6 +949,9 @@ function drawSickness() {
 
 function drawSicknessBar() {
   //console.log("sickness.barScore: " + round(sickness.barScore));
+  strokeWeight(0);
+  fill(255);
+  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barSize);
   fill(196, 221, 138);
   strokeWeight(0);
   rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barHeight);
@@ -1556,6 +1562,7 @@ function draw() {
   //Game with soccer
   //Backgrounds change
   //Dark/light mode with button
+  //backgrounds on the bars
 
 
 
