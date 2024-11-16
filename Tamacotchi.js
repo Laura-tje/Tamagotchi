@@ -1081,8 +1081,10 @@ function drawBars() {
   strokeWeight(3);
   
   //Energy
-  colorOfBar(energyBar.score); 
   strokeWeight(0);
+  fill(255);
+  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size);
+  colorOfBar(energyBar.score); 
   rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height);
   strokeWeight(3);
   noFill();
@@ -1091,8 +1093,10 @@ function drawBars() {
   scoreBarFillingEnergy();
   
   //Hunger
-  colorOfBar(hungerBar.score);
   strokeWeight(0);
+  fill(255);
+  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size);
+  colorOfBar(hungerBar.score);
   rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height);
   strokeWeight(3);
   noFill();
@@ -1101,8 +1105,10 @@ function drawBars() {
   scoreBarFillingHunger();
   
   //Happiness
-  colorOfBar(happinessBar.score);
   strokeWeight(0);
+  fill(255);
+  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size);
+  colorOfBar(happinessBar.score);
   rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height);
   strokeWeight(3);
   noFill();
@@ -1111,8 +1117,10 @@ function drawBars() {
   scoreBarFillingHappiness();
   
   //Health
-  colorOfBar(healthBar.score);
   strokeWeight(0);
+  fill(255);
+  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size);
+  colorOfBar(healthBar.score);
   rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height);
   strokeWeight(3);
   noFill();
