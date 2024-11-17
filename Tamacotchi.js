@@ -167,12 +167,23 @@ let playIcon = {
 let cleanIcon = {
   name: "clean",
   image: null,
-  x: 170,
-  y: 100,
+  x: 40,
+  y: 400,
   size: 80,
 };
+let showerIcon = {
+  name: "shower",
+  image: null,
+  x: 40,
+  y: 300,
+  size: 80,
+}
 
-let bubbles = []; 
+let bubbles = {
+  x: [],
+  y: [],
+  size: [],
+}; 
 
 
 
@@ -207,6 +218,7 @@ function preload() {
   foodIcon.wormsImage = loadImage("assets/wormsImage.png")
   playIcon.image = loadImage("assets/playIcon.png");
   cleanIcon.image = loadImage("assets/cleanIcon.png");
+  showerIcon.image = loadImage("assets/showerIcon.png");
 }
 function setup() {
   canvas = createCanvas(600, 500);
@@ -271,6 +283,7 @@ function setup() {
   foodIcon.wormsImage.resize(foodIcon.wormsSize, foodIcon.wormsSize);
   playIcon.image.resize(playIcon.size, playIcon.size);
   cleanIcon.image.resize(cleanIcon.size, cleanIcon.size);
+  showerIcon.image.resize(showerIcon.size, showerIcon.size);
   
   drawRoom();
 }
@@ -362,6 +375,9 @@ function isNowDead() {
     deaths.amount += 1;
     room.current = room.lastRoom; //this has to be something different but idk what!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     room.lastRoom = 0;
+    bubbles.x = [];
+    bubbles.y = [];
+    bubbles.size = [];
   }
 }
 
@@ -407,9 +423,10 @@ function drawRoomButtons() {
   room.buttonForward.position(370, room.y - 23);
   room.buttonForward.size(25, 25)
   room.buttonForward.mousePressed(buttonRoomForward);
-  //room.buttonForward.style("background-color", "#5d3330");
-  //room.buttonForward.style("border", "#5d3330");
-  //room.buttonForward.style("color", "#f9e0a0");
+  room.buttonForward.style("background-color", "#a06e56");
+  room.buttonForward.style("border-color", "#5d3330");
+  room.buttonForward.style("border-radius", "5px");
+  room.buttonForward.style("color", "#5d3330");
   room.buttonForward.style("padding", "0");
   room.buttonForward.style("text-align", "center");
 
@@ -417,9 +434,10 @@ function drawRoomButtons() {
   room.buttonBackward.position(205, room.y - 23);
   room.buttonBackward.size(25, 25)
   room.buttonBackward.mousePressed(buttonRoomBackward);
-  //room.buttonBackward.style("background-color", "#5d3330");
-  //room.buttonBackward.style("border", "#5d3330");
-  //room.buttonBackward.style("color", "#f9e0a0");
+  room.buttonBackward.style("background-color", "#a06e56");
+  room.buttonBackward.style("border-color", "#5d3330");
+  room.buttonBackward.style("border-radius", "5px");
+  room.buttonBackward.style("color", "#5d3330");
   room.buttonBackward.style("padding", "0");
   room.buttonBackward.style("text-align", "center");
 }
@@ -525,9 +543,19 @@ function drawFrog() {
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
       isNowCleaning();
       eyesClosed();    
-      bubbles.push([mouseX, mouseY, (random(10, 40))]);
+      bubbles.x.push(mouseX);
+      bubbles.y.push(mouseY);
+      bubbles.size.push(random(10, 40))
     }
-    cleaningLook();
+  }
+  if (currentlyDragging == showerIcon.name) {
+    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+      isNowShowering();
+      eyesClosed();    
+      bubbles.x.shift();
+      bubbles.y.shift();
+      bubbles.size.shift();
+    }
   }
   if (bubbles) {
     cleaningLook();
@@ -576,11 +604,12 @@ function sickLook() {
 }
 
 function cleaningLook() {
-  for (let i = 0; i < bubbles.length; i += 1) {
+  for (let i = 0; i < bubbles.x.length; i += 1) {
     if (i % 5 == 0) {
       fill(173, 216, 230, 150); // Light blue with some transparency
       stroke(93, 51, 48, 150);
-      circle(bubbles[i][0], bubbles[i][1], bubbles[i][2]); // Draw the bubble        
+      circle(bubbles.x[i], bubbles.y[i], bubbles.size[i]); // Draw the bubble    
+      console.log("bubble")    
     }
   }
 }
@@ -1088,7 +1117,7 @@ function drawBars() {
   
   //Energy
   strokeWeight(0);
-  fill(255);
+  fill(255, 100);
   rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size);
   colorOfBar(energyBar.score); 
   rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height);
@@ -1100,7 +1129,7 @@ function drawBars() {
   
   //Hunger
   strokeWeight(0);
-  fill(255);
+  fill(255, 100);
   rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size);
   colorOfBar(hungerBar.score);
   rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height);
@@ -1112,7 +1141,7 @@ function drawBars() {
   
   //Happiness
   strokeWeight(0);
-  fill(255);
+  fill(255, 100);
   rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size);
   colorOfBar(happinessBar.score);
   rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height);
@@ -1124,7 +1153,7 @@ function drawBars() {
   
   //Health
   strokeWeight(0);
-  fill(255);
+  fill(255, 100);
   rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size);
   colorOfBar(healthBar.score);
   rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height);
@@ -1230,12 +1259,28 @@ function isNowSleeping() {
   }
 }
 function isNowCleaning() {
-  healthBar.score += 5 * (deltaTime / 1000);
-  happinessBar.score += 3 * (deltaTime / 1000);
+  if (healthBar.score < 76) {
+    healthBar.score += 5 * (deltaTime / 1000);
+    happinessBar.score += 3 * (deltaTime / 1000);
+  }
   energyBar.score -= 2 * (deltaTime / 1000);
 
   localStorage.setItem("healthBar.score", healthBar.score);
   localStorage.setItem("happinessBar.score", happinessBar.score);
+  localStorage.setItem("energyBar.score", energyBar.score);
+
+  if (healthBar.score > 99 && happinessBar.score > 99 && energyBar.score < 1) {
+    currentlyDragging = "none";
+  }
+}
+function isNowShowering() {
+  healthBar.score += 5 * (deltaTime / 1000);
+  happinessBar.score += 3 * (deltaTime / 1000);
+  energyBar.score -= 2 * (deltaTime / 1000)
+
+  localStorage.setItem("healthBar.score", healthBar.score);
+  localStorage.setItem("happinessBar.score", happinessBar.score);
+  localStorage.setItem("energyBar.score", energyBar.score);
 
   if (healthBar.score > 99 && happinessBar.score > 99 && energyBar.score < 1) {
     currentlyDragging = "none";
@@ -1470,12 +1515,18 @@ function drawIcons() {
   } else if (room.current == 1) {
     image(cleanIcon.image, cleanIcon.x, cleanIcon.y);
   }
+
+  if (currentlyDragging == showerIcon.name && room.current == 1) {
+    image(showerIcon.image, mouseX - (showerIcon.size/2), mouseY - (showerIcon.size/2), showerIcon.size + 5, showerIcon.size + 5);
+  } else if (room.current == 1) {
+    image(showerIcon.image, showerIcon.x, showerIcon.y);
+  }
 } 
 
 function mousePressed() {
   //Food Icon
-  if (mouseX > foodIcon.x && mouseX < foodIcon.x + 100 && 
-      mouseY > foodIcon.y && mouseY < foodIcon.y + 100 && room.current == 3) {
+  if (mouseX > foodIcon.x && mouseX < foodIcon.x + foodIcon.size && 
+      mouseY > foodIcon.y && mouseY < foodIcon.y + foodIcon.size && room.current == 3) {
     currentlyDragging = foodIcon.name;
 
     if (foodIcon.rollingMenu == true) {
@@ -1486,32 +1537,32 @@ function mousePressed() {
   }
 
   //Food Icon Fly
-  if (mouseX > foodIcon.flyX && mouseX < foodIcon.flyX + 100 && 
-      mouseY > foodIcon.flyY && mouseY < foodIcon.flyY + 100 && room.current == 3) {
+  if (mouseX > foodIcon.flyX && mouseX < foodIcon.flyX + foodIcon.flySize && 
+      mouseY > foodIcon.flyY && mouseY < foodIcon.flyY + foodIcon.flySize && room.current == 3) {
     currentlyDragging = foodIcon.flyName;
   }
 
   //Food Icon Worms
-  if (mouseX > foodIcon.wormsX && mouseX < foodIcon.wormsX + 100 && 
-      mouseY > foodIcon.wormsY && mouseY < foodIcon.wormsY + 100 && room.current == 3) {
+  if (mouseX > foodIcon.wormsX && mouseX < foodIcon.wormsX + foodIcon.wormsSize && 
+      mouseY > foodIcon.wormsY && mouseY < foodIcon.wormsY + foodIcon.wormsSize && room.current == 3) {
     currentlyDragging = foodIcon.wormsName;
   }
 
   //Food Icon Medicine
-  if (mouseX > foodIcon.medicineX && mouseX < foodIcon.medicineX + 100 && 
-      mouseY > foodIcon.medicineY && mouseY < foodIcon.medicineY + 100 && room.current == 3) {
+  if (mouseX > foodIcon.medicineX && mouseX < foodIcon.medicineX + foodIcon.medicineSize && 
+      mouseY > foodIcon.medicineY && mouseY < foodIcon.medicineY + foodIcon.medicineSize && room.current == 3) {
     currentlyDragging = foodIcon.medicineName;
   }
 
   //Sleep Icon
-  if (mouseX > sleepIcon.x && mouseX < sleepIcon.x + 100 && 
-      mouseY > sleepIcon.y && mouseY < sleepIcon.y + 100 && room.current == 2) {
+  if (mouseX > sleepIcon.x && mouseX < sleepIcon.x + sleepIcon.size && 
+      mouseY > sleepIcon.y && mouseY < sleepIcon.y + sleepIcon.size && room.current == 2) {
     currentlyDragging = sleepIcon.name;
   }
 
   //Play Icon
-  if (mouseX > playIcon.x && mouseX < playIcon.x + 100 && 
-      mouseY > playIcon.y && mouseY < playIcon.y + 100 && room.current == 4) {
+  if (mouseX > playIcon.x && mouseX < playIcon.x + playIcon.size && 
+      mouseY > playIcon.y && mouseY < playIcon.y + playIcon.size && room.current == 4) {
       currentlyDragging = playIcon.name;
       
     if(playingIsSet == false) {
@@ -1521,10 +1572,18 @@ function mousePressed() {
   }
   
   //Clean Icon
-  if (mouseX > cleanIcon.x && mouseX < cleanIcon.x + 100 && 
-      mouseY > cleanIcon.y && mouseY < cleanIcon.y + 100 && room.current == 1) {
+  if (mouseX > cleanIcon.x && mouseX < cleanIcon.x + cleanIcon.size && 
+      mouseY > cleanIcon.y && mouseY < cleanIcon.y + cleanIcon.size && room.current == 1) {
     currentlyDragging = cleanIcon.name;
   }
+
+  //Shower Icon
+  if (mouseX > showerIcon.x && mouseX < showerIcon.x + showerIcon.size &&
+      mouseY > showerIcon.y && mouseY < showerIcon.y + showerIcon.size && 
+      room.current == 1 && bubbles) {
+    currentlyDragging = showerIcon.name;
+  }
+
 
 
 } 
