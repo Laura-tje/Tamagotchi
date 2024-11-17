@@ -177,6 +177,13 @@ let showerIcon = {
   x: 40,
   y: 300,
   size: 80,
+  waterdrop: {
+    image: null,
+    size: 20,
+    time: 0,
+    x: [], 
+    y: [],
+  },
 }
 
 let bubbles = {
@@ -219,6 +226,9 @@ function preload() {
   playIcon.image = loadImage("assets/playIcon.png");
   cleanIcon.image = loadImage("assets/cleanIcon.png");
   showerIcon.image = loadImage("assets/showerIcon.png");
+
+  //waterDrops
+  showerIcon.waterdrop.image = loadImage("assets/waterdrop.png");
 }
 function setup() {
   canvas = createCanvas(600, 500);
@@ -284,6 +294,8 @@ function setup() {
   playIcon.image.resize(playIcon.size, playIcon.size);
   cleanIcon.image.resize(cleanIcon.size, cleanIcon.size);
   showerIcon.image.resize(showerIcon.size, showerIcon.size);
+
+  showerIcon.waterdrop.image.resize(showerIcon.waterdrop.size, showerIcon.waterdrop.size);
   
   drawRoom();
 }
@@ -550,7 +562,6 @@ function drawFrog() {
   }
   if (currentlyDragging == showerIcon.name) {
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      isNowShowering();
       eyesClosed();    
       bubbles.x.shift();
       bubbles.y.shift();
@@ -559,6 +570,9 @@ function drawFrog() {
   }
   if (bubbles) {
     cleaningLook();
+  }
+  if (currentlyDragging == showerIcon.name) {
+    isNowShowering();
   }
 }
 
@@ -1285,6 +1299,48 @@ function isNowShowering() {
   if (healthBar.score > 99 && happinessBar.score > 99 && energyBar.score < 1) {
     currentlyDragging = "none";
   }
+
+  
+  //drawing water drops
+  //if (currentlyDragging == showerIcon.name) {
+  //  showerIcon.waterdrop.time += deltaTime / 1000;
+  //  console.log(round(showerIcon.waterdrop.time));
+  //}
+//
+  //if (showerIcon.waterdrop.time % 3 == 0) {
+  //  showerIcon.waterdrop.x.push(mouseX);
+  //  showerIcon.waterdrop.y.push(mouseY);
+  //  console.log("showerIcon.waterdrop.x")
+  //}
+  //
+  //for (let i; i < showerIcon.waterdrop.x.length; i += 1) {
+  //  showerIcon.waterdrop.y[i] -= 5 * (deltaTime / 1000);
+  //  image(showerIcon.waterdrop.image, showerIcon.waterdrop.x[i], showerIcon.waterdrop.y[i]);
+  //  console.log("waterdrop")
+  //}
+  if (currentlyDragging == showerIcon.name) {
+    showerIcon.waterdrop.time += deltaTime / 100; // Increment time
+    if (showerIcon.waterdrop.time >= 3) {
+      // Add a drop every 3 seconds
+      showerIcon.waterdrop.x.push(mouseX - 20);
+      showerIcon.waterdrop.y.push(mouseY - 10);
+      showerIcon.waterdrop.time = 0; // Prevent multiple additions in the same frame
+    }
+  }
+
+  // Update and display water drops
+  for (let i = showerIcon.waterdrop.x.length - 1; i >= 0; i--) {
+    showerIcon.waterdrop.y[i] += 100 * (deltaTime / 1000); // Move the drop down
+    image(showerIcon.waterdrop.image, showerIcon.waterdrop.x[i], showerIcon.waterdrop.y[i]);
+
+    // Remove drops that fall off the screen
+    if (showerIcon.waterdrop.y[i] > 500) {
+      showerIcon.waterdrop.x.splice(i, 1);
+      showerIcon.waterdrop.y.splice(i, 1);
+    }
+  }
+  
+
 }
 
 function colorOfBar(score) {
@@ -1589,6 +1645,9 @@ function mousePressed() {
 } 
 function mouseReleased() {
   currentlyDragging = "none"
+
+  showerIcon.waterdrop.x = [];
+  showerIcon.waterdrop.y = [];
 }
 
 
