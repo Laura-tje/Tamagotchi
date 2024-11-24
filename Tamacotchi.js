@@ -187,6 +187,7 @@ let showerIcon = {
 }
 
 let bubbles = {
+  time: 0,
   x: [],
   y: [],
   size: [],
@@ -441,6 +442,7 @@ function drawRoomButtons() {
   room.buttonForward.style("color", "#5d3330");
   room.buttonForward.style("padding", "0");
   room.buttonForward.style("text-align", "center");
+  room.buttonForward.style("font-weight", "bold");
 
   room.buttonBackward = createButton("<");
   room.buttonBackward.position(205, room.y - 23);
@@ -452,6 +454,7 @@ function drawRoomButtons() {
   room.buttonBackward.style("color", "#5d3330");
   room.buttonBackward.style("padding", "0");
   room.buttonBackward.style("text-align", "center");
+  room.buttonBackward.style("font-weight", "bold");
 }
 
 function buttonRoomBackward() {
@@ -555,17 +558,25 @@ function drawFrog() {
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
       isNowCleaning();
       eyesClosed();    
-      bubbles.x.push(mouseX);
-      bubbles.y.push(mouseY);
-      bubbles.size.push(random(10, 40))
+      bubbles.time += deltaTime / 1000;
+      if (bubbles.time >= 0.1) {
+        bubbles.x.push(mouseX);
+        bubbles.y.push(mouseY);
+        bubbles.size.push(random(10, 40))
+        bubbles.time = 0;
+      }
     }
   }
   if (currentlyDragging == showerIcon.name) {
     if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      eyesClosed();    
-      bubbles.x.shift();
-      bubbles.y.shift();
-      bubbles.size.shift();
+      eyesClosed();  
+      bubbles.time += deltaTime / 1000;
+      if (bubbles.time >= 0.05) {  
+        bubbles.x.shift();
+        bubbles.y.shift();
+        bubbles.size.shift();
+        bubbles.time = 0;
+      }
     }
   }
   if (bubbles) {
@@ -619,12 +630,12 @@ function sickLook() {
 
 function cleaningLook() {
   for (let i = 0; i < bubbles.x.length; i += 1) {
-    if (i % 5 == 0) {
       fill(173, 216, 230, 150); // Light blue with some transparency
-      stroke(93, 51, 48, 150);
+      //stroke(93, 51, 48, 150);
+      stroke(230, 150);
       circle(bubbles.x[i], bubbles.y[i], bubbles.size[i]); // Draw the bubble    
       console.log("bubble")    
-    }
+    
   }
 }
 function hungerLook() {
@@ -993,15 +1004,15 @@ function drawSickness() {
 function drawSicknessBar() {
   //console.log("sickness.barScore: " + round(sickness.barScore));
   strokeWeight(0);
-  fill(255);
-  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barSize);
+  fill(0, 100);
+  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barSize, 5);
   fill(196, 221, 138);
   strokeWeight(0);
-  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barHeight);
+  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barHeight, 5);
   strokeWeight(3);
   stroke(0);
   noFill();
-  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barSize);
+  rect(sickness.barX, sickness.barY, sickness.barSize, sickness.barSize, 5);
   image(sickness.barImage, sickness.barX, sickness.barY);
 
   scoreBarFillingSickness(); 
@@ -1131,49 +1142,49 @@ function drawBars() {
   
   //Energy
   strokeWeight(0);
-  fill(255, 100);
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size);
+  fill(0, 100);
+  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
   colorOfBar(energyBar.score); 
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height);
+  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height, 5);
   strokeWeight(3);
   noFill();
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size);
+  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
   image(energyBar.image, energyBar.x - 5, energyBar.y - 5);
   scoreBarFillingEnergy();
   
   //Hunger
   strokeWeight(0);
-  fill(255, 100);
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size);
+  fill(0, 100);
+  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
   colorOfBar(hungerBar.score);
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height);
+  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height, 5);
   strokeWeight(3);
   noFill();
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size);
+  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
   image(hungerBar.image, hungerBar.x, hungerBar.y);
   scoreBarFillingHunger();
   
   //Happiness
   strokeWeight(0);
-  fill(255, 100);
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size);
+  fill(0, 100);
+  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
   colorOfBar(happinessBar.score);
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height);
+  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height, 5);
   strokeWeight(3);
   noFill();
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size);
+  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
   image(happinessBar.image, happinessBar.x + 2.5, happinessBar.y + 2.5);
   scoreBarFillingHappiness();
   
   //Health
   strokeWeight(0);
-  fill(255, 100);
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size);
+  fill(0, 100);
+  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
   colorOfBar(healthBar.score);
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height);
+  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height, 5);
   strokeWeight(3);
   noFill();
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size);
+  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
   image(healthBar.image, healthBar.x + 2.5, healthBar.y + 2.5);
   scoreBarFillingHealth();
 
@@ -1277,7 +1288,7 @@ function isNowCleaning() {
     healthBar.score += 5 * (deltaTime / 1000);
     happinessBar.score += 3 * (deltaTime / 1000);
   }
-  energyBar.score -= 2 * (deltaTime / 1000);
+  energyBar.score -= 1 * (deltaTime / 1000);
 
   localStorage.setItem("healthBar.score", healthBar.score);
   localStorage.setItem("happinessBar.score", happinessBar.score);
@@ -1290,7 +1301,7 @@ function isNowCleaning() {
 function isNowShowering() {
   healthBar.score += 5 * (deltaTime / 1000);
   happinessBar.score += 3 * (deltaTime / 1000);
-  energyBar.score -= 2 * (deltaTime / 1000)
+  energyBar.score -= 1 * (deltaTime / 1000)
 
   localStorage.setItem("healthBar.score", healthBar.score);
   localStorage.setItem("happinessBar.score", happinessBar.score);
@@ -1302,27 +1313,12 @@ function isNowShowering() {
 
   
   //drawing water drops
-  //if (currentlyDragging == showerIcon.name) {
-  //  showerIcon.waterdrop.time += deltaTime / 1000;
-  //  console.log(round(showerIcon.waterdrop.time));
-  //}
-//
-  //if (showerIcon.waterdrop.time % 3 == 0) {
-  //  showerIcon.waterdrop.x.push(mouseX);
-  //  showerIcon.waterdrop.y.push(mouseY);
-  //  console.log("showerIcon.waterdrop.x")
-  //}
-  //
-  //for (let i; i < showerIcon.waterdrop.x.length; i += 1) {
-  //  showerIcon.waterdrop.y[i] -= 5 * (deltaTime / 1000);
-  //  image(showerIcon.waterdrop.image, showerIcon.waterdrop.x[i], showerIcon.waterdrop.y[i]);
-  //  console.log("waterdrop")
-  //}
+
   if (currentlyDragging == showerIcon.name) {
     showerIcon.waterdrop.time += deltaTime / 100; // Increment time
-    if (showerIcon.waterdrop.time >= 3) {
+    if (showerIcon.waterdrop.time >= 1.7) {
       // Add a drop every 3 seconds
-      showerIcon.waterdrop.x.push(mouseX - 20);
+      showerIcon.waterdrop.x.push(random(mouseX - 40, mouseX - 20));
       showerIcon.waterdrop.y.push(mouseY - 10);
       showerIcon.waterdrop.time = 0; // Prevent multiple additions in the same frame
     }
