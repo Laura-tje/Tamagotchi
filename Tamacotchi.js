@@ -160,7 +160,8 @@ let sleepIcon = {
 let playIcon = {
   name: "play",
   image: null,
-  x: 100,
+  playingGame: false,
+  x: 50,
   y: 400,
   size: 80,
 };
@@ -396,8 +397,6 @@ function isNowDead() {
 
 //Rooms
 function drawRoom() {
-  //background(135, 206, 265); //this has to go eventually
-
   stroke(93, 51, 48); //brown
   strokeWeight(3);
   fill(160, 110, 86); //brown
@@ -424,9 +423,14 @@ function drawRoom() {
     text("Kitchen", 300, room.y);
   } else if (room.current == 4) {
     drawPlayroom();
-    room.buttonForward.show();
-    room.buttonBackward.show();
-    text("Outside", 300, room.y);
+    if (!playIcon.playingGame) {
+      room.buttonForward.show();
+      room.buttonBackward.show();
+      text("Outside", 300, room.y);
+    } else {
+      room.buttonForward.hide();
+      room.buttonBackward.hide();
+    }
   }
   textAlign(LEFT);
 }
@@ -488,106 +492,108 @@ function drawPlayroom() {
 
 //Frog
 function drawFrog() {
-  image(tamagotchi.image, tamagotchi.x, tamagotchi.y);
-  
-  mouthHappy();
-  eyesOpen();
-  
-  if (currentlyDragging == "none") {
-    //bubbles = [];
-  }
-  if (currentlyDragging == playIcon.name) {
-
-  }
-
-  if (energyBar.score < 50) {
-    mouthUnhappy();    
-    tiredLook();
-  }
-  if (hungerBar.score < 50) {
-    mouthUnhappy();    
-    hungerLook();
-  }
-  if (happinessBar.score < 50) {
-    mouthUnhappy();
-  }
-  if (healthBar.score < 50) {    
-    mouthUnhappy();
-    dirtyLook();
-  }
-
-  
-  if (foodIcon.flyAmount > 0 && currentlyDragging == foodIcon.flyName && foodIcon.rollingMenu) {
-    mouthOpen()
-    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      tongueFollow(isNowFeeding)
+  if (!playIcon.playingGame) {
+    image(tamagotchi.image, tamagotchi.x, tamagotchi.y);
+    
+    mouthHappy();
+    eyesOpen();
+    
+    if (currentlyDragging == "none") {
+      //bubbles = [];
     }
-  }
-  if (foodIcon.wormsAmount > 0 && currentlyDragging == foodIcon.wormsName && foodIcon.rollingMenu) {
-    mouthOpen();
-    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      tongueFollow(isNowFeeding)
+    if (currentlyDragging == playIcon.name) {
+  
     }
-  }
-
-  if (sickness.isSick) {
-    sickLook();
-  }
-
-  if (foodIcon.medicineAmount > 0 && currentlyDragging == foodIcon.medicineName && foodIcon.rollingMenu) {
-    mouthOpen();
-    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      tongueFollow(isNowFeedingMedicine)
+  
+    if (energyBar.score < 50) {
+      mouthUnhappy();    
+      tiredLook();
     }
-  }
-  if (currentlyDragging == sleepIcon.name && mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-    isNowSleeping();
-    eyesClosed();
-
-    fill(93, 51, 48); //brown
-    stroke(93, 51, 48); //brown
-    strokeWeight(1);
-    textSize(20);
-    text("Z", tamagotchi.x + 280, tamagotchi.y + 130);
-    textSize(30);
-    text("Z", tamagotchi.x + 300, tamagotchi.y + 110);
-    textSize(40);
-    text("Z", tamagotchi.x + 325, tamagotchi.y + 90);
-  }
-  if (currentlyDragging == cleanIcon.name) {
-    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      isNowCleaning();
-      eyesClosed();    
-      bubbles.time += deltaTime / 1000;
-      if (bubbles.time >= 0.1) {
-        bubbles.x.push(mouseX);
-        bubbles.y.push(mouseY);
-        bubbles.size.push(random(10, 40))
-        bubbles.time = 0;
+    if (hungerBar.score < 50) {
+      mouthUnhappy();    
+      hungerLook();
+    }
+    if (happinessBar.score < 50) {
+      mouthUnhappy();
+    }
+    if (healthBar.score < 50) {    
+      mouthUnhappy();
+      dirtyLook();
+    }
+  
+    
+    if (foodIcon.flyAmount > 0 && currentlyDragging == foodIcon.flyName && foodIcon.rollingMenu) {
+      mouthOpen()
+      if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+        tongueFollow(isNowFeeding)
       }
     }
-  }
-  if (currentlyDragging == showerIcon.name) {
-    if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
-      eyesClosed();  
-      bubbles.time += deltaTime / 1000;
-      if (bubbles.time >= 0.05) {  
-        bubbles.x.shift();
-        bubbles.y.shift();
-        bubbles.size.shift();
-        bubbles.time = 0;
+    if (foodIcon.wormsAmount > 0 && currentlyDragging == foodIcon.wormsName && foodIcon.rollingMenu) {
+      mouthOpen();
+      if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+        tongueFollow(isNowFeeding)
       }
     }
+  
+    if (sickness.isSick) {
+      sickLook();
+    }
+  
+    if (foodIcon.medicineAmount > 0 && currentlyDragging == foodIcon.medicineName && foodIcon.rollingMenu) {
+      mouthOpen();
+      if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+        tongueFollow(isNowFeedingMedicine)
+      }
+    }
+    if (currentlyDragging == sleepIcon.name && mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+      isNowSleeping();
+      eyesClosed();
+  
+      fill(93, 51, 48); //brown
+      stroke(93, 51, 48); //brown
+      strokeWeight(1);
+      textSize(20);
+      text("Z", tamagotchi.x + 280, tamagotchi.y + 130);
+      textSize(30);
+      text("Z", tamagotchi.x + 300, tamagotchi.y + 110);
+      textSize(40);
+      text("Z", tamagotchi.x + 325, tamagotchi.y + 90);
+    }
+    if (currentlyDragging == cleanIcon.name) {
+      if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+        isNowCleaning();
+        eyesClosed();    
+        bubbles.time += deltaTime / 1000;
+        if (bubbles.time >= 0.1) {
+          bubbles.x.push(mouseX);
+          bubbles.y.push(mouseY);
+          bubbles.size.push(random(10, 40))
+          bubbles.time = 0;
+        }
+      }
+    }
+    if (currentlyDragging == showerIcon.name) {
+      if (mouseX > (tamagotchi.x + (tamagotchi.size * 0.25)) && mouseX < (tamagotchi.x + (tamagotchi.size * 0.75)) && mouseY > (tamagotchi.y + (tamagotchi.size * 0.25)) && mouseY < (tamagotchi.y + (tamagotchi.size * 0.75))) {
+        eyesClosed();  
+        bubbles.time += deltaTime / 1000;
+        if (bubbles.time >= 0.05) {  
+          bubbles.x.shift();
+          bubbles.y.shift();
+          bubbles.size.shift();
+          bubbles.time = 0;
+        }
+      }
+    }
+    if (bubbles) {
+      cleaningLook();
+    }
+    if (currentlyDragging == showerIcon.name) {
+      isNowShowering();
+    }
   }
-  if (bubbles) {
-    cleaningLook();
-  }
-  if (currentlyDragging == showerIcon.name) {
-    isNowShowering();
-  }
-}
-
-
+}  
+  
+  
 function sickLook() {
   //Eyes
   //Eyes half closed
@@ -634,8 +640,6 @@ function cleaningLook() {
       //stroke(93, 51, 48, 150);
       stroke(230, 150);
       circle(bubbles.x[i], bubbles.y[i], bubbles.size[i]); // Draw the bubble    
-      console.log("bubble")    
-    
   }
 }
 function hungerLook() {
@@ -792,8 +796,23 @@ function tongueFollow(whatIsFed) {
 }
 
 
+//Game
+function drawGame() {
+  if (room.current == 4) {
+    if (playIcon.playingGame && !sickness.isSick) {
+      //
+    }
+  } else if (room.current != 4 || sickness.isSick) {
+    playIcon.playingGame = false;
+  }
+}
+
+
 //Store
 function drawStore() {
+  store.button.hide();
+  store.openButton.hide();
+
   if (!store.shown) {
     store.button.show();
   } else if (store.shown) {
@@ -1097,6 +1116,8 @@ function restart() {
 
 //Name
 function drawName() {
+  tamagotchi.nameButton.show();
+
   stroke(93, 51, 48); //brown
   strokeWeight(3);
   fill(160, 110, 86); //brown
@@ -1260,15 +1281,20 @@ function isNowFeedingMedicine() {
   sickness.medicineGiven = false;
 }
 function isNowPlaying() {
-  happinessBar.score += 5;
-  energyBar.score -= 3;
+  //happinessBar.score += 5;
+  //energyBar.score -= 3;
+  //coin.amount += 5;
+  if (!playIcon.playingGame) {
+    playIcon.playingGame = true;
+  } else if (playIcon.playingGame) {
+    playIcon.playingGame = false;
+  }
 
   localStorage.setItem("happinessBar.score", happinessBar.score);
   localStorage.setItem("energyBar.score", energyBar.score);
 
   playingIsSet = false;
   currentlyDragging = "none";
-  coin.amount += 5;
 }
 function isNowSleeping() { 
   healthBar.score += 5 * (deltaTime / 1000);
@@ -1358,8 +1384,10 @@ function scoreBarFillingEnergy() {
     energyBar.score = 100;
   }
 
-  energyBar.score -= (deltaTime / 5000) * (100 / energyBar.size);
-  energyBar.height = energyBar.score / (100 / energyBar.size);
+  if (!playIcon.playingGame) {
+    energyBar.score -= (deltaTime / 5000) * (100 / energyBar.size);
+    energyBar.height = energyBar.score / (100 / energyBar.size);
+  }
 
   localStorage.setItem("energyBar.score", energyBar.score);
 }
@@ -1372,8 +1400,10 @@ function scoreBarFillingHunger() {
     hungerBar.score = 100;
   }
 
-  hungerBar.score -= (deltaTime / 5000) * (100 / hungerBar.size);
-  hungerBar.height = hungerBar.score / (100 / hungerBar.size);
+  if (!playIcon.playingGame) {
+    hungerBar.score -= (deltaTime / 5000) * (100 / hungerBar.size);
+    hungerBar.height = hungerBar.score / (100 / hungerBar.size);
+  }
 
   localStorage.setItem("hungerBar.score", hungerBar.score)
 }
@@ -1620,6 +1650,7 @@ function mousePressed() {
     if(playingIsSet == false) {
       setTimeout(isNowPlaying, 100);
       playingIsSet = true;
+      //playIcon.playingGame = true;
     }
   }
   
@@ -1652,19 +1683,21 @@ function draw() {
   drawRoom();
   console.log(`${round(sickness.timerUntilSickness)}`);
   if (!isDead) {
-    tamagotchi.nameButton.show();
-    reloadButton.show();
-    store.button.hide();
-    store.openButton.hide();
-
-    drawStore();
-    drawName();
-    drawCoins();
-    drawDeaths();
-    drawFrog();
-    drawBars();
-    drawIcons();  
-    drawSickness();
+    if (!playIcon.playingGame) {
+      reloadButton.show();
+      drawStore();
+      drawName();
+      drawCoins();
+      drawDeaths();
+      drawFrog();
+      drawBars();
+      drawIcons();  
+      drawSickness();
+    } else if (playIcon.playingGame) {
+      tamagotchi.nameButton.hide();
+      reloadButton.hide();
+      drawGame();
+    }
   } else if (isDead) {
     isNowDead();
   }
@@ -1672,35 +1705,9 @@ function draw() {
 
 //To Do List:
   //Store button bigger
-  //Bubbles disappearen
   //Game with soccer
   //Backgrounds change
   //Dark/light mode with button
   //backgrounds on the bars
+  //Text with: Tamagotchi is now (sad, hungry, etc)
 
-
-
-
-
-
-
-  //Facial expressions working
-    //sickLook moet ook nog
-    //slaap met z'tjes
-    //Dirty Look mooi maken
-    //Bubbles whenever he is getting washed
-  //Add store
-    //Sneak peak store
-  //medicine working
-
-    //Soms de eerste keer gelijk dood als je medicine geeft zonder ziek te zijn.
-    //Als de sickness timer om is (en hij dus ziek wordt), word ie niet meer beter
-    //hij wordt niet meer beter
-  //Allow to see percentages bars when clicked on------------------------------------
-
-//Extra List:
-  //Verschillende soorten eten - 
-  //Minigame toevoegen - 3pt
-//Zelf naam geven - 1pt
-//Willekeurige gebeurtenissen (ziekte elke 10* minuten) - 2pt
-//Inventory system (inventory voedsel/medicijnen) - 3pt
