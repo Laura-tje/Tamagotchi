@@ -194,6 +194,39 @@ let bubbles = {
   size: [],
 }; 
 
+let game = {
+  mazeOption: {
+    image: null,
+    size: 100,
+    x: 100,
+    y: 200,
+  },
+  catchOption: {
+    image: null,
+    size: 100,
+    x: 250,
+    y: 200,
+  },
+  apple: {
+    image: null,
+    size: 50,
+    x: 0,
+    y: 0,
+    speed: 5,
+  },
+  basket: {
+    image: null,
+    size: 80,
+    x: 260,
+    y: 375,
+    speed: 5,
+  },
+  chosen: 0,
+  quitButton: null,
+  score: 0,
+  
+}
+
 
 
 
@@ -231,6 +264,14 @@ function preload() {
 
   //waterDrops
   showerIcon.waterdrop.image = loadImage("assets/waterdrop.png");
+
+  //game
+  game.catchOption.image = loadImage("assets/catchGameOption.png");
+  game.mazeOption.image = loadImage("assets/mazeGameOption.png");
+
+
+  game.apple.image = loadImage("assets/apple.png");
+  game.basket.image = loadImage("assets/basket.png");
 }
 function setup() {
   canvas = createCanvas(600, 500);
@@ -263,6 +304,9 @@ function setup() {
   drawBuyWormsButton();
   drawBuyMedicineButton();
   drawRoomButtons();
+  drawQuitButton();
+
+  game.quitButton.hide();
 
   sickness.barScore = localStorage.getItem("sickness.barScore") ? parseFloat(localStorage.getItem("sickness.barScore")) : 100;
   sickness.isSick = localStorage.getItem("sickness.isSick") ? parseFloat(localStorage.getItem("sickness.isSick")) : false;
@@ -298,6 +342,14 @@ function setup() {
   showerIcon.image.resize(showerIcon.size, showerIcon.size);
 
   showerIcon.waterdrop.image.resize(showerIcon.waterdrop.size, showerIcon.waterdrop.size);
+
+  //game
+  game.catchOption.image.resize(game.catchOption.size, game.catchOption.size);
+  game.mazeOption.image.resize(game.mazeOption.size, game.mazeOption.size);
+
+  game.apple.image.resize(game.apple.size, game.apple.size);
+  game.basket.image.resize(game.basket.size, game.basket.size);
+
   
   drawRoom();
 }
@@ -392,7 +444,18 @@ function isNowDead() {
     bubbles.x = [];
     bubbles.y = [];
     bubbles.size = [];
+    playIcon.playingGame = false;
+    game.score = 0;
+    game.chosen = 0;
   }
+}
+
+function resetBars() {
+  sickness.barScore = 100;
+  energyBar.score = 100;
+  hungerBar.score = 100;
+  happinessBar.score = 100;
+  healthBar.score = 100;
 }
 
 //Rooms
@@ -638,7 +701,8 @@ function cleaningLook() {
   for (let i = 0; i < bubbles.x.length; i += 1) {
       fill(173, 216, 230, 150); // Light blue with some transparency
       //stroke(93, 51, 48, 150);
-      stroke(230, 150);
+      stroke(0, 150);
+      //stroke(230, 150);
       circle(bubbles.x[i], bubbles.y[i], bubbles.size[i]); // Draw the bubble    
   }
 }
@@ -798,13 +862,82 @@ function tongueFollow(whatIsFed) {
 
 //Game
 function drawGame() {
-  if (room.current == 4) {
-    if (playIcon.playingGame && !sickness.isSick) {
-      //
+  if (!sickness.isSick) {
+    if (playIcon.playingGame && room.current == 4) {
+      reloadButton.hide();
+      tamagotchi.nameButton.hide();
+      game.quitButton.show();
+      
+      if (game.chosen == 0) {
+        drawGameOptions();
+      } else if (game.chosen == 1) {
+        catchGame();
+      } else if (game.chosen == 2) {
+        mazeGame();
+      }
+
     }
   } else if (room.current != 4 || sickness.isSick) {
     playIcon.playingGame = false;
   }
+}
+
+function drawGameOptions() {
+  fill(0, 150);
+  noStroke();
+  rect(0, 0, width, height);
+
+  if (mouseX > game.catchOption.x && mouseX < (game.catchOption.x + game.catchOption.size) &&
+      mouseY > game.catchOption.y && mouseY < (game.catchOption.y + game.catchOption.size)) {
+    image(game.catchOption.image, game.catchOption.x - (game.catchOption.size / 20), game.catchOption.y - (game.catchOption.size / 20), game.catchOption.size + (game.catchOption.size / 10), game.catchOption.size + (game.catchOption.size / 10));
+  } else {
+    image(game.catchOption.image, game.catchOption.x, game.catchOption.y);
+  }
+
+  if (mouseX > game.mazeOption.x && mouseX < (game.mazeOption.x + game.mazeOption.size) &&
+      mouseY > game.mazeOption.y && mouseY < (game.mazeOption.y + game.mazeOption.size)) {
+    image(game.mazeOption.image, game.mazeOption.x - (game.mazeOption.size / 20), game.mazeOption.y - (game.mazeOption.size / 20), game.mazeOption.size + (game.mazeOption.size / 10), game.mazeOption.size + (game.mazeOption.size / 10));
+  } else {
+    image(game.mazeOption.image, game.mazeOption.x, game.mazeOption.y);
+  }
+
+
+}
+
+function catchGame() {
+  gameBasket();
+  gameApple();
+}
+function mazeGame() {
+
+}
+
+function gameBasket() {
+  if ((keyIsDown(LEFT_ARROW) == true) && game.basket.x >= 0) {
+    game.basket.x -= game.basket.speed;
+  }
+
+  if ((keyIsDown(RIGHT_ARROW) == true) && game.basket.x <= (width - game.basket.size)) {
+    game.basket.x += game.basket.speed;
+  }
+
+  image(game.basket.image, game.basket.x, game.basket.y);
+}
+function gameApple() {
+
+
+  image(game.apple.image, game.apple.x, game.apple.y);
+}
+
+function drawQuitButton() {
+  game.quitButton = createButton("Quit");
+  game.quitButton.position(10, 10);
+  game.quitButton.mousePressed(quitGame);
+}
+function quitGame() {
+  playIcon.playingGame = false;
+  game.chosen = 0
+  game.quitButton.hide();
 }
 
 
@@ -969,54 +1102,60 @@ function buyMedicine() {
 
 //Coins
 function drawCoins() {
-  image(coin.image, coin.x, coin.y);
-
-  strokeWeight(1.5);
-  stroke(93, 51, 48); //brown
-  fill(93, 51, 48); //brown
-  textSize(20)
-  text(":  " + floor(coin.amount), coin.x + 45, coin.y + 32);
-
-  //if (coin.plus > 0 || coin.minus <= coin.amount) {
-  //  coin.amount += coin.plus;
-  //  coin.amount -= coin.minus;
-  //  coin.plus = 0;
-  //  coin.minus = 0;
-  //}
-
-  localStorage.setItem("coin.amount", coin.amount);
+  if (!playIcon.playingGame) {
+    image(coin.image, coin.x, coin.y);
+  
+    strokeWeight(1.5);
+    stroke(93, 51, 48); //brown
+    fill(93, 51, 48); //brown
+    textSize(20)
+    text(":  " + floor(coin.amount), coin.x + 45, coin.y + 32);
+  
+    //if (coin.plus > 0 || coin.minus <= coin.amount) {
+    //  coin.amount += coin.plus;
+    //  coin.amount -= coin.minus;
+    //  coin.plus = 0;
+    //  coin.minus = 0;
+    //}
+  
+    localStorage.setItem("coin.amount", coin.amount);
+  }
 }
 
 
 //Deaths
 function drawDeaths() {
-  image(deaths.image, deaths.x, deaths.y);
-
-  strokeWeight(1.5);
-  stroke(93, 51, 48); //brown
-  fill(93, 51, 48); //brown
-  textSize(20)
-  text(":  " + floor(deaths.amount), deaths.x + 45, deaths.y + 32);
-
-  localStorage.setItem("deaths.amount", deaths.amount);
+  if (!playIcon.playingGame) {
+    image(deaths.image, deaths.x, deaths.y);
+  
+    strokeWeight(1.5);
+    stroke(93, 51, 48); //brown
+    fill(93, 51, 48); //brown
+    textSize(20)
+    text(":  " + floor(deaths.amount), deaths.x + 45, deaths.y + 32);
+  
+    localStorage.setItem("deaths.amount", deaths.amount);
+  }
 }
 
 
 //sickness
 function drawSickness() {
-  if (sickness.isSick && !sickness.medicineGiven) {
-    drawSicknessBar();
-    sickness.isSick = true
-  } else if (sickness.isSick && sickness.medicineGiven) {
-
-    sickness.isSick = false;
-    //sickness.timerUntilSickness = 300;
-  } else if (!sickness.isSick && !sickness.medicineGiven) {
-
-    sicknessUntilTimer();
-  } else if (!sickness.isSick && sickness.medicineGiven) {
-    drawSicknessBar();
-    sickness.isSick = true;
+  if (!playIcon.playingGame) {
+    if (sickness.isSick && !sickness.medicineGiven) {
+      drawSicknessBar();
+      sickness.isSick = true
+    } else if (sickness.isSick && sickness.medicineGiven) {
+  
+      sickness.isSick = false;
+      //sickness.timerUntilSickness = 300;
+    } else if (!sickness.isSick && !sickness.medicineGiven) {
+  
+      sicknessUntilTimer();
+    } else if (!sickness.isSick && sickness.medicineGiven) {
+      drawSicknessBar();
+      sickness.isSick = true;
+    }
   }
 }
 
@@ -1123,7 +1262,7 @@ function drawName() {
   fill(160, 110, 86); //brown
   textSize(30);
 
-  if (!tamagotchi.nameFieldShown) {
+  if (!tamagotchi.nameFieldShown && !playIcon.playingGame) {
     textAlign(CENTER);
     text(tamagotchi.name, tamagotchi.x + 200, tamagotchi.y + 85);
     textAlign(LEFT);
@@ -1158,58 +1297,60 @@ function keyPressed() {
 
 //Bars
 function drawBars() {
-  stroke(0, 0, 0);
-  strokeWeight(3);
+  if (!playIcon.playingGame) {
+    stroke(0, 0, 0);
+    strokeWeight(3);
+    
+    //Energy
+    strokeWeight(0);
+    fill(0, 100);
+    rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
+    colorOfBar(energyBar.score); 
+    rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height, 5);
+    strokeWeight(3);
+    noFill();
+    rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
+    image(energyBar.image, energyBar.x - 5, energyBar.y - 5);
+    scoreBarFillingEnergy();
+    
+    //Hunger
+    strokeWeight(0);
+    fill(0, 100);
+    rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
+    colorOfBar(hungerBar.score);
+    rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height, 5);
+    strokeWeight(3);
+    noFill();
+    rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
+    image(hungerBar.image, hungerBar.x, hungerBar.y);
+    scoreBarFillingHunger();
+    
+    //Happiness
+    strokeWeight(0);
+    fill(0, 100);
+    rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
+    colorOfBar(happinessBar.score);
+    rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height, 5);
+    strokeWeight(3);
+    noFill();
+    rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
+    image(happinessBar.image, happinessBar.x + 2.5, happinessBar.y + 2.5);
+    scoreBarFillingHappiness();
+    
+    //Health
+    strokeWeight(0);
+    fill(0, 100);
+    rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
+    colorOfBar(healthBar.score);
+    rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height, 5);
+    strokeWeight(3);
+    noFill();
+    rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
+    image(healthBar.image, healthBar.x + 2.5, healthBar.y + 2.5);
+    scoreBarFillingHealth();
   
-  //Energy
-  strokeWeight(0);
-  fill(0, 100);
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
-  colorOfBar(energyBar.score); 
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.height, 5);
-  strokeWeight(3);
-  noFill();
-  rect(energyBar.x, energyBar.y, energyBar.size, energyBar.size, 5);
-  image(energyBar.image, energyBar.x - 5, energyBar.y - 5);
-  scoreBarFillingEnergy();
-  
-  //Hunger
-  strokeWeight(0);
-  fill(0, 100);
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
-  colorOfBar(hungerBar.score);
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.height, 5);
-  strokeWeight(3);
-  noFill();
-  rect(hungerBar.x, hungerBar.y, hungerBar.size, hungerBar.size, 5);
-  image(hungerBar.image, hungerBar.x, hungerBar.y);
-  scoreBarFillingHunger();
-  
-  //Happiness
-  strokeWeight(0);
-  fill(0, 100);
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
-  colorOfBar(happinessBar.score);
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.height, 5);
-  strokeWeight(3);
-  noFill();
-  rect(happinessBar.x, happinessBar.y, happinessBar.size, happinessBar.size, 5);
-  image(happinessBar.image, happinessBar.x + 2.5, happinessBar.y + 2.5);
-  scoreBarFillingHappiness();
-  
-  //Health
-  strokeWeight(0);
-  fill(0, 100);
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
-  colorOfBar(healthBar.score);
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.height, 5);
-  strokeWeight(3);
-  noFill();
-  rect(healthBar.x, healthBar.y, healthBar.size, healthBar.size, 5);
-  image(healthBar.image, healthBar.x + 2.5, healthBar.y + 2.5);
-  scoreBarFillingHealth();
-
-  showPercentage();
+    showPercentage();
+  }
 }
 
 function isNowFeeding() {
@@ -1585,10 +1726,12 @@ function drawIcons() {
   }
 
   //Play
-  if (currentlyDragging == playIcon.name && room.current == 4) {
-    image(playIcon.image, playIcon.x - 2.5, playIcon.y - 2.5, playIcon.size + 5, playIcon.size + 5);
-  } else if (room.current == 4) {
-    image(playIcon.image, playIcon.x, playIcon.y);
+  if (!playIcon.playingGame) {
+    if (currentlyDragging == playIcon.name && room.current == 4) {
+      image(playIcon.image, playIcon.x - 2.5, playIcon.y - 2.5, playIcon.size + 5, playIcon.size + 5);
+    } else if (room.current == 4) {
+      image(playIcon.image, playIcon.x, playIcon.y);
+    }
   }
 
   //Clean
@@ -1605,7 +1748,11 @@ function drawIcons() {
   }
 } 
 
+
+//Interaction
 function mousePressed() {
+
+
   //Food Icon
   if (mouseX > foodIcon.x && mouseX < foodIcon.x + foodIcon.size && 
       mouseY > foodIcon.y && mouseY < foodIcon.y + foodIcon.size && room.current == 3) {
@@ -1644,7 +1791,8 @@ function mousePressed() {
 
   //Play Icon
   if (mouseX > playIcon.x && mouseX < playIcon.x + playIcon.size && 
-      mouseY > playIcon.y && mouseY < playIcon.y + playIcon.size && room.current == 4) {
+      mouseY > playIcon.y && mouseY < playIcon.y + playIcon.size && 
+      room.current == 4 && !playIcon.playingGame) {
       currentlyDragging = playIcon.name;
       
     if(playingIsSet == false) {
@@ -1653,6 +1801,20 @@ function mousePressed() {
       //playIcon.playingGame = true;
     }
   }
+
+  //catch game
+
+  if (mouseX > game.catchOption.x && mouseX < (game.catchOption.x + game.catchOption.size) &&
+      mouseY > game.catchOption.y && mouseY < (game.catchOption.y + game.catchOption.size)) {
+    game.chosen = 1;
+  }
+
+  //maze game
+  if (mouseX > game.mazeOption.x && mouseX < (game.mazeOption.x + game.mazeOption.size) &&
+      mouseY > game.mazeOption.y && mouseY < (game.mazeOption.y + game.mazeOption.size)) {
+    game.chosen = 2;
+  }
+  
   
   //Clean Icon
   if (mouseX > cleanIcon.x && mouseX < cleanIcon.x + cleanIcon.size && 
@@ -1676,6 +1838,13 @@ function mouseReleased() {
   showerIcon.waterdrop.x = [];
   showerIcon.waterdrop.y = [];
 }
+//function keyPressed() {
+//  if (key == "ArrowLeft") {
+//    if (playIcon.playingGame) {
+//      game.basket.x -= 1;
+//    }
+//  }
+//}
 
 
 function draw() {    
@@ -1683,21 +1852,16 @@ function draw() {
   drawRoom();
   console.log(`${round(sickness.timerUntilSickness)}`);
   if (!isDead) {
-    if (!playIcon.playingGame) {
-      reloadButton.show();
-      drawStore();
-      drawName();
-      drawCoins();
-      drawDeaths();
-      drawFrog();
-      drawBars();
-      drawIcons();  
-      drawSickness();
-    } else if (playIcon.playingGame) {
-      tamagotchi.nameButton.hide();
-      reloadButton.hide();
-      drawGame();
-    }
+    reloadButton.show();
+    drawStore();
+    drawName();
+    drawCoins();
+    drawDeaths();
+    drawFrog();
+    drawBars();
+    drawIcons();  
+    drawSickness();
+    drawGame();
   } else if (isDead) {
     isNowDead();
   }
@@ -1710,4 +1874,5 @@ function draw() {
   //Dark/light mode with button
   //backgrounds on the bars
   //Text with: Tamagotchi is now (sad, hungry, etc)
+  //scrolling menu for store
 
